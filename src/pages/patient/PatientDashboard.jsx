@@ -81,7 +81,7 @@ const PatientDashboard = () => {
       </motion.div>
 
       {/* Stat cards */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(155px,1fr))', gap:'1rem' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(250px,1fr))', gap:'1rem' }}>
         {[
           { icon:<FiCalendar />,   value:stats.total,        label:'Total Appointments',   color:'#dbeafe', iconColor:'#2563b0' },
           { icon:<FiClock />,      value:stats.upcoming,     label:'Upcoming',             color:'#d1fae5', iconColor:'#059669' },
