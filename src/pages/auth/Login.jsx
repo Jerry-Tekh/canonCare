@@ -10,9 +10,9 @@ import { Input } from '../../components/common/Input'
 import styles from './Login.module.css'
 
 const DEMO = [
-  { role:'Admin',   email:'admin@hms.com',         password:'Admin@123'  },
-  { role:'Doctor',  email:'sarah.johnson@hms.com', password:'Doctor@123' },
-  { role:'Patient', email:'john.smith@email.com',  password:'Patient@123'},
+  { role:'Admin',   email:'admin@gmail.com',         password:'ThAdm@7234&JT1'  },
+  { role:'Doctor',  email:'doctor@gmail.com', password:'ThDoc@7234&JT1' },
+  { role:'Patient', email:'jerry@gmail.com',  password:'ThCan@7234&JT1'},
 ]
 
 const Login = () => {
