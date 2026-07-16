@@ -43,6 +43,14 @@ const AdminUsers = () => {
     } catch { toast?.('Action failed', 'error') }
   }
 
+  const changeRole = async (userId, newRole) => {
+    try {
+      await api.patch(`/users/${userId}/role`, { role: newRole })
+      toast?.(`User role updated to ${newRole}`, 'success')
+      load()
+    } catch { toast?.('Role update failed', 'error') }
+  }
+
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:'1.5rem' }}>
       <motion.div initial={{ opacity:0, y:-10 }} animate={{ opacity:1, y:0 }}
@@ -95,11 +103,18 @@ const AdminUsers = () => {
                   <Badge label={u.is_active ? 'Active' : 'Inactive'} variant={u.is_active ? 'active' : 'inactive'} />
                   <Badge label={u.is_verified ? 'Verified' : 'Unverified'} variant={u.is_verified ? 'active' : 'inactive'} />
                 </div>
-                {u.role !== 'admin' && (
-                  <Button variant={u.is_active ? 'danger' : 'teal'} size="sm" onClick={() => toggleStatus(u.id, u.is_active)}>
-                    {u.is_active ? <><FiUserX /> Suspend</> : <><FiUserCheck /> Activate</>}
-                  </Button>
-                )}
+                <div style={{ display:'flex', flexDirection:'column', gap:'0.5rem', alignItems:'flex-end' }}>
+                  <Select value={u.role} onChange={(e) => changeRole(u.id, e.target.value)} style={{ minWidth: 120 }}>
+                    <option value="patient">Patient</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="admin">Admin</option>
+                  </Select>
+                  {u.role !== 'admin' && (
+                    <Button variant={u.is_active ? 'danger' : 'teal'} size="sm" onClick={() => toggleStatus(u.id, u.is_active)}>
+                      {u.is_active ? <><FiUserX /> Suspend</> : <><FiUserCheck /> Activate</>}
+                    </Button>
+                  )}
+                </div>
               </div>
               <div style={{ fontSize:'var(--text-xs)', color:'var(--text-muted)', marginTop:'0.5rem' }}>
                 Joined {new Date(u.created_at).toLocaleDateString()}
@@ -146,11 +161,18 @@ const AdminUsers = () => {
                     {new Date(u.created_at).toLocaleDateString()}
                   </td>
                   <td style={{ padding:'0.875rem 1rem' }}>
-                    {u.role !== 'admin' && (
-                      <Button variant={u.is_active ? 'danger' : 'teal'} size="sm" onClick={() => toggleStatus(u.id, u.is_active)}>
-                        {u.is_active ? <><FiUserX /> Suspend</> : <><FiUserCheck /> Activate</>}
-                      </Button>
-                    )}
+                    <div style={{ display:'flex', gap:'0.5rem', flexWrap:'wrap', alignItems:'center' }}>
+                      <Select value={u.role} onChange={(e) => changeRole(u.id, e.target.value)} style={{ minWidth: 120 }}>
+                        <option value="patient">Patient</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="admin">Admin</option>
+                      </Select>
+                      {u.role !== 'admin' && (
+                        <Button variant={u.is_active ? 'danger' : 'teal'} size="sm" onClick={() => toggleStatus(u.id, u.is_active)}>
+                          {u.is_active ? <><FiUserX /> Suspend</> : <><FiUserCheck /> Activate</>}
+                        </Button>
+                      )}
+                    </div>
                   </td>
                 </motion.tr>
               ))}

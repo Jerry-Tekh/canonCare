@@ -50,7 +50,7 @@ const AdminDashboard = () => {
       </motion.div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
         {[
           { icon: <FiUsers />,     value: totalUsers,                      label: 'Total Users',      color: '#dbeafe', iconColor: '#2563b0' },
           { icon: <FiUserCheck />, value: userMap.doctor?.count || 0,      label: 'Doctors',          color: '#d1fae5', iconColor: '#059669' },
