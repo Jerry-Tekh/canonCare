@@ -10,7 +10,7 @@ import { Input } from '../../components/common/Input'
 import styles from './Login.module.css'
 
 const DEMO = [
-  { role:'Admin',   email:'admin@gmail.com',         password:'ThAdm@7234&JT1'  },
+  { role:'Admin',   email:'adm@gmail.com',         password:'ThAdm@7234&JT1'  },
   { role:'Doctor',  email:'doctor@gmail.com', password:'ThDoc@7234&JT1' },
   { role:'Patient', email:'jerry@gmail.com',  password:'ThCan@7234&JT1'},
 ]
