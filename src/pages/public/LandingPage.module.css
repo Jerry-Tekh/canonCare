@@ -19,6 +19,8 @@
   display: flex;
   align-items: center;
   gap: 0.625rem;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 
@@ -30,18 +32,89 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 .logoText {
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.125rem;
   color: var(--color-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .navActions {
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .nav {
+    padding: 0 1rem;
+  }
+  
+  .navInner {
+    height: 56px;
+    gap: 1rem;
+  }
+  
+  .logoBox {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .logoText {
+    font-size: 0.875rem;
+  }
+  
+  .navActions {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav {
+    padding: 0 0.75rem;
+  }
+  
+  .navInner {
+    height: 52px;
+    gap: 0.5rem;
+  }
+  
+  .logoBox {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .logoText {
+    font-size: 0.75rem;
+    display: none;
+  }
+  
+  .navActions {
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .nav {
+    padding: 0 0.5rem;
+  }
+  
+  .navInner {
+    height: 48px;
+    gap: 0.25rem;
+  }
+  
+  .logoBox {
+    width: 24px;
+    height: 24px;
+  }
 }
 
 .hero {

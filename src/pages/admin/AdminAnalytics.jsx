@@ -60,7 +60,7 @@ const AdminAnalytics = () => {
       </motion.div>
 
       {/* Stats grid */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(155px,1fr))', gap:'1rem' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px,1fr))', gap:'1rem' }}>
         {stats.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ delay: i*0.05 }}>
             <StatCard {...s} />

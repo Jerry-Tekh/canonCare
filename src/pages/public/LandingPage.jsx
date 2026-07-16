@@ -26,7 +26,7 @@ const Nav = () => (
         <span className={styles.logoText}>Canon Care HMS</span>
       </div>
       <div className={styles.navActions}>
-        <Link to="/login" style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', fontWeight: 600, padding: '0.375rem 0.75rem' }}>Sign In</Link>
+        <Link to="/login" style={{ color: 'var(--text-secondary)', fontSize: 'clamp(0.625rem, 2vw, var(--text-sm))', fontWeight: 600, padding: '0.375rem 0.5rem', whiteSpace: 'nowrap' }}>Sign In</Link>
         <Link to="/register"><Button variant="primary" size="sm">Get Started</Button></Link>
       </div>
     </div>
