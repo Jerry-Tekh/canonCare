@@ -56,7 +56,7 @@ const LandingPage = () => {
             The Modern Hospital<br />Management System
           </h1>
           <p style={{ fontSize: '1.125rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: '2.5rem', maxWidth: 560, margin: '0 auto 2.5rem' }}>
-            A unified platform connecting doctors, patients, and administrators — with real-time chat, video consultations, smart scheduling, and enterprise-grade security.
+            A unified platform connecting doctors, patients, and administrators with real-time chat, video consultations, smart scheduling, and enterprise-grade security.
           </p>
           <div className={styles.heroButtons}>
             <Button variant="teal" size="xl" onClick={() => navigate('/register?role=patient')}>I'm a Patient <FiArrowRight /></Button>
