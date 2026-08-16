@@ -79,7 +79,7 @@ const DoctorDashboard = () => {
       {/* Greeting */}
       <motion.div initial={{ opacity:0, y:-12 }} animate={{ opacity:1, y:0 }}>
         <h2 style={{ fontSize:'var(--text-3xl)', fontWeight:800, marginBottom:'0.25rem' }}>
-          {greeting}, Dr. {firstName} 👋
+          {greeting}, Dr. {firstName} 
         </h2>
         <p style={{ color:'var(--text-secondary)' }}>
           Here's your clinical overview — {new Date().toLocaleDateString('default', { weekday:'long', month:'long', day:'numeric' })}
