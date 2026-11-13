@@ -9,6 +9,12 @@ import Button from '../../components/common/Button'
 import { Input } from '../../components/common/Input'
 import styles from './Login.module.css'
 
+const DEMO_ACCOUNTS = [
+  { role: 'Admin', email: 'adm@gmail.com', password: 'ThAdm@7234&JT1' },
+  { role: 'Doctor', email: 'doctor@gmail.com', password: 'ThDoc@7234&JT1' },
+  { role: 'Patient', email: 'jerry@gmail.com', password: 'ThCan@7234&JT1' },
+]
+
 const Login = () => {
   const { login }  = useAuth()
   const navigate   = useNavigate()
@@ -116,6 +122,22 @@ const Login = () => {
                 </div>
                 <Button type="submit" loading={loading} fullWidth size="lg">Sign In</Button>
               </form>
+              <div className={styles.divider}><span>or choose a demo account</span></div>
+              <section className={styles.demoBox} aria-label="Demo sign-in accounts">
+                <p className={styles.demoTitle}>Continue as</p>
+                <div className={styles.demoGrid}>
+                  {DEMO_ACCOUNTS.map(account => (
+                    <button
+                      key={account.role}
+                      className={styles.demoBtn}
+                      type="button"
+                      onClick={() => { setForm({ email: account.email, password: account.password }); setError('') }}
+                    >
+                      {account.role}
+                    </button>
+                  ))}
+                </div>
+              </section>
               <p className={styles.registerLink} style={{ marginTop:'1.5rem' }}>
                 Don&apos;t have an account? <Link to="/register">Sign up</Link>
               </p>
