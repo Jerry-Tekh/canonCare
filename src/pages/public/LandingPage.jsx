@@ -45,7 +45,7 @@ const LandingPage = () => (
         <div className={styles.heroImage} role="img" aria-label="Doctor ready to care for a patient" />
         <div className={styles.heroShade} />
         <motion.div className={styles.heroContent} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
-          <span className={styles.eyebrow}><span /> HERE FOR YOUR HEALTH</span>
+          <span className={styles.eyebrow}>HERE FOR YOUR HEALTH</span>
           <h1>Care that puts <em>you</em> first.</h1>
           <p>From your first appointment to ongoing care, our team is here to help you feel informed, supported, and cared for.</p>
           <div className={styles.heroActions}>
@@ -100,7 +100,14 @@ const LandingPage = () => (
     </main>
 
     <footer className={styles.footer}>
-      <div className={styles.footerMain}><Link to="/" className={styles.logo}><span className={styles.logoMark}><GiMedicalPack /></span><span><strong>Canon Care</strong><small>HEALTH &amp; WELLNESS</small></span></Link><p>Compassionate care, connected around you.</p><div className={styles.footerLinks}><a href="#services">Services</a><a href="#about">About</a><a href="#contact">Contact</a><Link to="/login">Patient sign in</Link></div><a href="tel:+2348000000000" className={styles.footerPhone}><FiPhone /> Contact our care team</a></div>
+      <div className={styles.footerMain}>
+        <div className={styles.footerBrand}>
+          <Link to="/" className={styles.logo}><span className={styles.logoMark}><GiMedicalPack /></span><span><strong>Canon Care</strong><small>HEALTH &amp; WELLNESS</small></span></Link>
+          <p>Compassionate care, connected around you.</p>
+        </div>
+        <div className={styles.footerColumn}><h2>Explore</h2><div className={styles.footerLinks}><a href="#services">Our services</a><a href="#about">About us</a><a href="#contact">Contact</a></div></div>
+        <div className={styles.footerColumn}><h2>Patient support</h2><div className={styles.footerLinks}><Link to="/login">Patient sign in</Link><Link to="/register?role=patient">Book an appointment</Link><a href="tel:+2348000000000">Call our care team</a></div></div>
+      </div>
       <div className={styles.footerBottom}><span>© {new Date().getFullYear()} Canon Care. All rights reserved.</span><span>For emergencies, contact your local emergency services.</span></div>
     </footer>
   </div>

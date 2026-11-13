@@ -13,3 +13,44 @@
 @media(max-width:1000px){.hero{margin:16px 16px 0;min-height:560px}.heroContent{padding-left:6%;width:62%}.quickInfo{margin:0 24px;grid-template-columns:1fr 1fr;gap:1.3rem}.quickAction{grid-column:2}.serviceGrid{grid-template-columns:repeat(2,1fr)}.careSection{gap:3rem}.emergency{margin:60px 24px}.contactSection{gap:2.5rem}}
 @media(max-width:700px){.topbarInner{justify-content:center}.topbarInner>span{display:none}.navInner{height:68px;padding:0 17px;gap:1rem}.navLinks,.signIn{display:none}.navActions{margin-left:auto}.navCta{padding:.75rem .85rem;font-size:.75rem}.mobileMenu{display:grid;place-items:center;color:var(--ink);font-size:1.35rem}.hero{margin:10px 10px 0;min-height:680px;border-radius:12px}.heroImage{inset:39% 0 0;background-position:66% center}.heroShade{background:linear-gradient(180deg,#f2f4f2 0%,#f2f4f2 38%,rgba(242,244,242,.24) 67%,rgba(242,244,242,0) 100%)}.heroContent{width:100%;padding:3.4rem 1.4rem 0}.hero h1{font-size:clamp(2.65rem,12vw,4rem);max-width:450px}.heroContent>p{font-size:.92rem;max-width:500px}.heroActions{gap:1rem}.heroCard{bottom:18px;right:14px;left:14px;min-width:0;padding:.8rem 1rem}.heroNote{margin-top:1.3rem}.quickInfo{margin:0 14px;grid-template-columns:1fr 1fr;padding:1.2rem;gap:1rem}.quickItem{gap:.55rem}.quickIcon{height:36px;width:36px;font-size:16px}.quickItem strong{font-size:.68rem}.quickAction{grid-column:1/-1;border-top:1px solid #edf1f0;padding-top:.9rem}.section{padding:72px 18px}.sectionHeading{margin-bottom:2rem}.sectionHeading h2,.careCopy h2{font-size:2.1rem}.serviceGrid{gap:.7rem}.serviceCard{padding:1.15rem;border-radius:11px}.serviceIcon{height:44px;width:44px;font-size:20px}.serviceCard h3{font-size:.94rem;margin:1rem 0 .4rem}.serviceCard p{font-size:.75rem;min-height:104px}.serviceCard>a{font-size:.74rem}.careSection{padding:60px 20px;grid-template-columns:1fr;gap:2.5rem}.careVisual{min-height:300px}.carePhoto{inset:0 25px 20px 0}.careCopy h2{margin:.8rem 0}.careCopy>p{font-size:.88rem}.emergency{margin:38px 16px;padding:1.4rem;display:grid;grid-template-columns:48px 1fr;gap:1rem}.emergencyIcon{height:48px;width:48px}.emergency h2{font-size:1.1rem}.emergency p{line-height:1.5}.lightButton{grid-column:1/-1;justify-content:center}.contactSection{padding:35px 20px 65px;grid-template-columns:1fr;gap:1.2rem}.contactSection h2{font-size:2rem;margin:.8rem 0}.footer{padding:2.4rem 20px 1rem}.footerMain{align-items:flex-start;gap:1.2rem;flex-direction:column}.footerMain>p{margin:0}.footerLinks{flex-wrap:wrap}.footerBottom{padding-top:1rem;flex-direction:column;font-size:.65rem}}
 @media(prefers-reduced-motion:reduce){.page *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Landing page refinements */
+.hero .eyebrow span{display:none}
+.footerMain{display:grid;grid-template-columns:1.4fr 1fr 1fr;align-items:start;gap:3rem;padding:0 0 2.5rem}
+.footerBrand>p{color:#a8b7bf;font-size:.84rem;line-height:1.6;margin:1rem 0 0}
+.footerColumn h2{color:#fff;font:700 .8rem 'Manrope',sans-serif;margin:0 0 1rem;letter-spacing:.04em}
+.footerLinks{display:grid;gap:.8rem}
+.footerLinks a{width:fit-content;transition:color .2s}
+.footerLinks a:hover{color:#40d7bd}
+.footerBottom{max-width:1100px;margin:auto;padding:1rem 0;line-height:1.6}
+@media(max-width:700px){
+  .navInner{gap:.7rem}
+  .navActions{flex:1;min-width:0;justify-content:flex-end;gap:0}
+  .navCta{padding:.68rem .72rem;font-size:.69rem;gap:.25rem;white-space:nowrap}
+  .mobileMenu{display:none}
+  .logo{gap:.5rem}
+  .logoMark{height:38px;width:38px}
+  .logo strong{font-size:1rem}
+  .logo small{font-size:.52rem}
+  .footerMain{grid-template-columns:1fr 1fr;gap:2rem 1.25rem}
+  .footerBrand{grid-column:1/-1}
+  .footerBottom{gap:.45rem}
+}
+@media(max-width:420px){
+  .navInner{padding:0 12px;gap:.55rem}
+  .navCta{padding:.62rem .6rem;font-size:.65rem;gap:.18rem}
+  .navCta svg{width:14px;height:14px}
+  .logo{gap:.4rem}
+  .logoMark{width:34px;height:34px;font-size:18px;border-radius:10px}
+  .logo strong{font-size:.94rem}
+  .logo small{font-size:.48rem;letter-spacing:.1em}
+}
+@media(max-width:350px){
+  .navInner{padding:0 8px;gap:.4rem}
+  .navCta{font-size:.58rem;padding:.58rem .48rem}
+  .logoMark{width:30px;height:30px}
+  .logo strong{font-size:.86rem}
+  .logo small{font-size:.43rem}
+  .footerMain{grid-template-columns:1fr}
+  .footerBrand{grid-column:auto}
+}
