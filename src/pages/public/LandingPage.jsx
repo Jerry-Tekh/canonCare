@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   FiActivity, FiArrowRight, FiCalendar, FiChevronRight, FiClock,
-  FiHeart, FiMapPin, FiMenu, FiPhone, FiShield, FiUsers, FiVideo,
+  FiHeart, FiMapPin, FiMenu, FiPhone, FiShield, FiUsers, FiVideo, FiX,
 } from 'react-icons/fi';
 import { GiMedicalPack } from 'react-icons/gi';
 import styles from './LandingPage.module.css';
@@ -15,7 +15,11 @@ const SERVICES = [
   { icon: <FiShield />, title: 'Patient support', text: 'Keep appointments, care updates, and health information together in one place.' },
 ];
 
-const LandingPage = () => (
+const LandingPage = () => {
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const closeMobileNav = () => setMobileNavOpen(false);
+
+  return (
   <div className={styles.page}>
     <div className={styles.topbar}>
       <div className={styles.topbarInner}>
@@ -29,14 +33,16 @@ const LandingPage = () => (
           <span className={styles.logoMark}><GiMedicalPack /></span>
           <span><strong>Canon Care</strong><small>HEALTH &amp; WELLNESS</small></span>
         </Link>
-        <nav className={styles.navLinks} aria-label="Main navigation">
-          <a href="#home">Home</a><a href="#services">Our services</a><a href="#about">About us</a><a href="#contact">Contact</a>
+        <nav id="primary-navigation" className={`${styles.navLinks} ${mobileNavOpen ? styles.navLinksOpen : ''}`} aria-label="Main navigation">
+          <a href="#home" onClick={closeMobileNav}>Home</a><a href="#services" onClick={closeMobileNav}>Our services</a><a href="#about" onClick={closeMobileNav}>About us</a><a href="#contact" onClick={closeMobileNav}>Contact</a>
         </nav>
         <div className={styles.navActions}>
           <Link to="/login" className={styles.signIn}>Sign in</Link>
           <Link to="/register?role=patient" className={styles.navCta}>Book an appointment <FiChevronRight /></Link>
         </div>
-        <a href="#services" className={styles.mobileMenu} aria-label="Go to services"><FiMenu /></a>
+        <button type="button" className={styles.mobileMenu} aria-label={mobileNavOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={mobileNavOpen} aria-controls="primary-navigation" onClick={() => setMobileNavOpen(open => !open)}>
+          {mobileNavOpen ? <FiX /> : <FiMenu />}
+        </button>
       </div>
     </header>
 
@@ -49,15 +55,14 @@ const LandingPage = () => (
           <h1>Care that puts <em>you</em> first.</h1>
           <p>From your first appointment to ongoing care, our team is here to help you feel informed, supported, and cared for.</p>
           <div className={styles.heroActions}>
-            <Link to="/register?role=patient" className={styles.primaryButton}>Make an appointment <FiArrowRight /></Link>
             <a href="#services" className={styles.textButton}>Explore our services <FiChevronRight /></a>
           </div>
           <div className={styles.heroNote}><FiShield /> Your care and health information are treated with care.</div>
         </motion.div>
         <div className={styles.heroCard}>
           <div className={styles.cardIcon}><FiCalendar /></div>
-          <div><strong>Easy appointment booking</strong><span>Choose a time that works for you</span></div>
-          <Link to="/register?role=patient" aria-label="Book an appointment"><FiArrowRight /></Link>
+          <div><strong>Care that fits your schedule</strong><span>Find support for your next step</span></div>
+          <a href="#contact" aria-label="Contact the care team"><FiArrowRight /></a>
         </div>
       </section>
 
@@ -65,7 +70,7 @@ const LandingPage = () => (
         <div className={styles.quickItem}><span className={styles.quickIcon}><FiClock /></span><div><small>CLINIC HOURS</small><strong>Weekdays, 8 AM–5 PM</strong></div></div>
         <div className={styles.quickItem}><span className={styles.quickIcon}><FiPhone /></span><div><small>CARE TEAM</small><a href="tel:+2348000000000"><strong>Call for assistance</strong></a></div></div>
         <div className={styles.quickItem}><span className={styles.quickIcon}><FiMapPin /></span><div><small>VISIT CANON CARE</small><a href="#contact"><strong>Get in touch for directions</strong></a></div></div>
-        <div className={styles.quickAction}><Link to="/register?role=patient">Request an appointment <FiArrowRight /></Link></div>
+        <div className={styles.quickAction}><a href="#about">Learn about our care <FiArrowRight /></a></div>
       </section>
 
       <section className={styles.section} id="services">
@@ -111,6 +116,7 @@ const LandingPage = () => (
       <div className={styles.footerBottom}><span>© {new Date().getFullYear()} Canon Care. All rights reserved.</span><span>For emergencies, contact your local emergency services.</span></div>
     </footer>
   </div>
-);
+  );
+};
 
 export default LandingPage;
