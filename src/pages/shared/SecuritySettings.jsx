@@ -198,12 +198,12 @@ const TwoFactorPanel = ({ user }) => {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:'1.25rem' }}>
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'1rem 1.25rem', background: is2FAEnabled ? '#d1fae5' : 'var(--bg-secondary)', borderRadius:'var(--border-radius)', border:`1px solid ${is2FAEnabled ? '#6ee7b7' : 'var(--border-color)'}` }}>
-        <div style={{ display:'flex', alignItems:'center', gap:'0.875rem' }}>
+      <div style={{ display:'flex', flexDirection:isMobile ? 'column' : 'row', alignItems:isMobile ? 'stretch' : 'center', justifyContent:'space-between', gap:'1rem', padding:isMobile ? '1rem' : '1rem 1.25rem', background: is2FAEnabled ? '#d1fae5' : 'var(--bg-secondary)', borderRadius:'var(--border-radius)', border:`1px solid ${is2FAEnabled ? '#6ee7b7' : 'var(--border-color)'}` }}>
+        <div style={{ display:'flex', alignItems:isMobile ? 'flex-start' : 'center', gap:'0.875rem', width:isMobile ? '100%' : 'auto', flex:isMobile ? '0 0 auto' : '1', minWidth:0 }}>
           <div style={{ width:40, height:40, borderRadius:'var(--border-radius)', background: is2FAEnabled ? '#059669' : 'var(--color-slate-light)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff' }}>
             {is2FAEnabled ? <FiCheck size={20} /> : <FiShield size={20} color="var(--text-muted)" />}
           </div>
-          <div>
+          <div style={{ flex:1, minWidth:0 }}>
             <div style={{ fontWeight:700, fontSize:'var(--text-sm)' }}>
               Two-Factor Authentication
               <span style={{ marginLeft:'0.625rem', fontSize:'0.65rem', fontWeight:700, padding:'2px 8px', borderRadius:'9999px', background: is2FAEnabled ? '#059669' : '#6b7280', color:'#fff' }}>
@@ -216,7 +216,7 @@ const TwoFactorPanel = ({ user }) => {
           </div>
         </div>
         {phase === 'idle' && (
-          <Button variant={is2FAEnabled ? 'danger' : 'teal'} size="sm"
+          <Button variant={is2FAEnabled ? 'danger' : 'teal'} size="sm" fullWidth={isMobile}
             loading={loading}
             onClick={is2FAEnabled ? () => setPhase('disable') : startSetup}>
             {is2FAEnabled ? 'Disable' : 'Enable 2FA'}
