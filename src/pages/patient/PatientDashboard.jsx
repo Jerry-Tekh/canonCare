@@ -1,36 +1,39 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import {
-  FiCalendar, FiFileText, FiActivity, FiUsers,
-  FiClock, FiTrendingUp, FiBell, FiHeart,
-} from 'react-icons/fi'
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, AreaChart, Area, CartesianGrid, Legend,
-} from 'recharts'
+import { FiCalendar, FiFileText, FiActivity, FiUsers, FiBell, FiHeart, FiArrowRight, FiCheckCircle } from 'react-icons/fi'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, CartesianGrid, Legend } from 'recharts'
 import { useAuth } from '../../context/AuthContext'
-import useBreakpoint from '../../hooks/useBreakpoint'
 import api from '../../services/api'
-import { StatCard } from '../../components/common/Card'
 import Badge from '../../components/common/Badge'
 import Button from '../../components/common/Button'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import EmptyState from '../../components/common/EmptyState'
+import styles from './PatientDashboard.module.css'
 
-const STATUS_COLORS = {
-  completed:'#059669', pending:'#d97706', cancelled:'#6b7280',
-  accepted:'#2563b0',  rescheduled:'#7c3aed', no_show:'#dc2626',
-}
-const PIE_COLORS = ['#2563b0','#059669','#d97706','#7c3aed','#dc2626','#6b7280']
+const STATUS_COLORS = { completed: '#00a98d', pending: '#d58b18', cancelled: '#82919a', accepted: '#493077', rescheduled: '#8971b1', no_show: '#c94d4d' }
+const TYPE_COLORS = ['#00a98d', '#493077', '#d58b18', '#4b9fc2', '#c94d4d', '#82919a']
+
+const Metric = ({ icon, value, label, note, tone = 'teal' }) => (
+  <article className={`${styles.metric} ${styles[tone]}`}>
+    <span className={styles.metricIcon}>{icon}</span>
+    <div><strong>{value}</strong><span>{label}</span><small>{note}</small></div>
+  </article>
+)
+
+const ChartCard = ({ title, description, children }) => (
+  <section className={styles.chartCard}>
+    <div className={styles.cardHeading}><h3>{title}</h3><p>{description}</p></div>
+    {children}
+  </section>
+)
 
 const PatientDashboard = () => {
-  const { user }    = useAuth()
-  const { isMobile } = useBreakpoint()
-  const navigate    = useNavigate()
-  const [data, setData]       = useState(null)
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     api.get('/analytics/patient')
@@ -39,211 +42,102 @@ const PatientDashboard = () => {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return (
-    <div style={{ display:'flex', justifyContent:'center', padding:'4rem' }}>
-      <LoadingSpinner />
-    </div>
-  )
-  if (error) return (
-    <div style={{ textAlign:'center', padding:'3rem', color:'var(--color-error)' }}>{error}</div>
-  )
+  if (loading) return <div className={styles.state}><LoadingSpinner /></div>
+  if (error) return <div className={styles.stateError} role="alert">{error}</div>
 
   const { stats, monthly, statusBreakdown, typeBreakdown, doctors, prescriptions } = data
-  const firstName = user?.name?.split(' ')[0]
-  const hour      = new Date().getHours()
-  const greeting  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const firstName = user?.name?.split(' ')[0] || 'there'
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const today = new Date().toLocaleDateString('default', { weekday: 'long', month: 'long', day: 'numeric' })
+  const visitTotal = monthly.reduce((sum, item) => sum + Number(item.total || 0), 0)
+  const completedTotal = monthly.reduce((sum, item) => sum + Number(item.completed || 0), 0)
 
   return (
-    <div style={{ display:'flex', flexDirection:'column', gap:'1.75rem' }}>
+    <div className={styles.dashboard}>
+      <motion.header className={styles.pageHeader} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+        <div><span className={styles.eyebrow}>YOUR HEALTH OVERVIEW</span><h2>{greeting}, {firstName}</h2><p>{today} · Your care, all in one place.</p></div>
+        <div className={styles.headerActions}>
+          <Button variant="teal" onClick={() => navigate('/patient/book')}><FiCalendar /> Book an appointment <FiArrowRight /></Button>
+          <Button variant="outline" onClick={() => navigate('/patient/messages')}>Message your doctor</Button>
+        </div>
+      </motion.header>
 
-      {/* Greeting */}
-      <motion.div initial={{ opacity:0, y:-12 }} animate={{ opacity:1, y:0 }}>
-        <h2 style={{ fontSize:'var(--text-3xl)', fontWeight:800, marginBottom:'0.25rem' }}>
-          {greeting}, {firstName} 
-        </h2>
-        <p style={{ color:'var(--text-secondary)' }}>
-          Your personal health overview — {new Date().toLocaleDateString('default', { weekday:'long', month:'long', day:'numeric' })}
-        </p>
-      </motion.div>
+      <section className={styles.metricGrid} aria-label="Your care summary">
+        <Metric icon={<FiCalendar />} value={stats.upcoming} label="Upcoming appointments" note="Coming up" />
+        <Metric icon={<FiCheckCircle />} value={stats.completed} label="Completed visits" note="All time" tone="purple" />
+        <Metric icon={<FiHeart />} value={prescriptions.length} label="Active prescriptions" note="Current care" tone="blue" />
+        <Metric icon={<FiUsers />} value={stats.doctorsSeen} label="Doctors consulted" note="Your care team" />
+      </section>
 
-      {/* Quick actions */}
-      <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.1 }}
-        style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap' }}>
-        <Button variant="primary" onClick={() => navigate('/patient/book')}>
-          <FiCalendar size={14} /> Book Appointment
-        </Button>
-        <Button variant="outline" onClick={() => navigate('/patient/messages')}>
-          Message Doctor
-        </Button>
-        <Button variant="ghost" onClick={() => navigate('/patient/prescriptions')}>
-          <FiFileText size={14} /> Prescriptions
-        </Button>
-      </motion.div>
-
-      {/* Stat cards */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(250px,1fr))', gap:'1rem' }}>
-        {[
-          { icon:<FiCalendar />,   value:stats.total,        label:'Total Appointments',   color:'#dbeafe', iconColor:'#2563b0' },
-          { icon:<FiClock />,      value:stats.upcoming,     label:'Upcoming',             color:'#d1fae5', iconColor:'#059669' },
-          { icon:<FiActivity />,   value:stats.completed,    label:'Completed Visits',     color:'#ede9fe', iconColor:'#7c3aed' },
-          { icon:<FiUsers />,      value:stats.doctorsSeen,  label:'Doctors Consulted',    color:'#ccfbf1', iconColor:'#0d9488' },
-          { icon:<FiFileText />,   value:prescriptions.length, label:'Active Prescriptions', color:'#fef3c7', iconColor:'#d97706' },
-          { icon:<FiBell />,       value:stats.unreadNotifs, label:'Unread Notifications', color:'#fee2e2', iconColor:'#dc2626' },
-        ].map((s, i) => (
-          <motion.div key={s.label} initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.1+i*0.07 }}>
-            <StatCard {...s} />
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Monthly visits area chart + Status pie */}
-      <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap:'1.5rem' }}>
-
-        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.3 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <h3 style={{ fontWeight:700, marginBottom:'1.25rem', display:'flex', alignItems:'center', gap:'0.5rem' }}>
-            <FiTrendingUp color="var(--color-teal)" /> Visit History (6 months)
-          </h3>
-          {monthly.every(m => m.total === 0) ? (
-            <div style={{ textAlign:'center', padding:'2rem', color:'var(--text-muted)', fontSize:'var(--text-sm)' }}>
-              No visit history yet. <Button variant="teal" size="sm" style={{ marginLeft:'0.5rem' }} onClick={() => navigate('/patient/book')}>Book now</Button>
+      <div className={styles.primaryCharts}>
+        <ChartCard title="Your visit history" description={`${visitTotal} visits · ${completedTotal} completed over the last six months`}>
+          {monthly.every(item => item.total === 0) ? (
+            <EmptyState icon={<FiActivity />} title="Your visit history will appear here" message="When you have visits, you’ll see your activity over time." action={<Button variant="teal" size="sm" onClick={() => navigate('/patient/book')}>Book an appointment</Button>} />
+          ) : (
+            <div className={styles.chart} role="img" aria-label={`${visitTotal} visits and ${completedTotal} completed over the last six months`}>
+              <ResponsiveContainer width="100%" height={230}><AreaChart data={monthly}>
+                <defs><linearGradient id="patientVisits" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#493077" stopOpacity={.16} /><stop offset="95%" stopColor="#493077" stopOpacity={0} /></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#eaf0ee" /><XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#647780', fontSize: 11 }} /><YAxis hide allowDecimals={false} />
+                <Tooltip contentStyle={{ border: '1px solid #e5ecea', borderRadius: 10, fontSize: 12 }} /><Legend />
+                <Area type="monotone" dataKey="total" name="Total visits" stroke="#493077" fill="url(#patientVisits)" strokeWidth={2.5} dot={{ r: 3 }} />
+                <Area type="monotone" dataKey="completed" name="Completed" stroke="#00a98d" fill="none" strokeWidth={2} dot={{ r: 3 }} />
+                <Area type="monotone" dataKey="video" name="Virtual visits" stroke="#4b9fc2" fill="none" strokeWidth={1.7} strokeDasharray="4 3" dot={{ r: 2 }} />
+              </AreaChart></ResponsiveContainer>
             </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={monthly}>
-                <defs>
-                  <linearGradient id="visitGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#2563b0" stopOpacity={0.18} />
-                    <stop offset="95%" stopColor="#2563b0" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="completedGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#059669" stopOpacity={0.18} />
-                    <stop offset="95%" stopColor="#059669" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill:'#94a3b8', fontSize:11 }} />
-                <YAxis hide allowDecimals={false} />
-                <Tooltip contentStyle={{ border:'none', borderRadius:8, fontSize:12 }} />
-                <Legend style={{ fontSize:12 }} />
-                <Area type="monotone" dataKey="total"     name="Total"     stroke="#2563b0" fill="url(#visitGrad)"     strokeWidth={2} dot={{ r:3 }} />
-                <Area type="monotone" dataKey="completed" name="Completed" stroke="#059669" fill="url(#completedGrad)" strokeWidth={2} dot={{ r:3 }} />
-                <Area type="monotone" dataKey="video"     name="Video"     stroke="#0d9488" fill="none"                strokeWidth={1.5} strokeDasharray="4 2" dot={{ r:2 }} />
-              </AreaChart>
-            </ResponsiveContainer>
           )}
-        </motion.div>
+        </ChartCard>
 
-        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.35 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <h3 style={{ fontWeight:700, marginBottom:'1.25rem', fontSize:'var(--text-base)' }}>Appointment Status</h3>
-          {statusBreakdown.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'2rem', color:'var(--text-muted)', fontSize:'var(--text-sm)' }}>No data yet</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie data={statusBreakdown} cx="50%" cy="50%" innerRadius={48} outerRadius={75} paddingAngle={3} dataKey="value">
-                  {statusBreakdown.map((entry, i) => (
-                    <Cell key={i} fill={STATUS_COLORS[entry.name] || PIE_COLORS[i % PIE_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ border:'none', borderRadius:8, fontSize:12 }} />
-                <Legend iconType="circle" iconSize={8} style={{ fontSize:10 }} />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </motion.div>
-      </div>
-
-      {/* Visit type bar + Doctors visited */}
-      <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'1.5rem' }}>
-
-        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.4 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <h3 style={{ fontWeight:700, marginBottom:'1.25rem', fontSize:'var(--text-base)' }}>Visit Types</h3>
-          {typeBreakdown.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'2rem', color:'var(--text-muted)', fontSize:'var(--text-sm)' }}>No data yet</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={160}>
-              <BarChart data={typeBreakdown} layout="vertical" barSize={22}>
-                <XAxis type="number" hide allowDecimals={false} />
-                <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} width={80}
-                  tick={{ fill:'#64748b', fontSize:12, textTransform:'capitalize' }} />
-                <Tooltip contentStyle={{ border:'none', borderRadius:8, fontSize:12 }} />
-                <Bar dataKey="value" radius={[0,4,4,0]}>
-                  {typeBreakdown.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </motion.div>
-
-        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.45 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.25rem' }}>
-            <h3 style={{ fontWeight:700, fontSize:'var(--text-base)' }}>My Doctors</h3>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/patient/appointments')}>View all</Button>
-          </div>
-          {doctors.length === 0 ? (
-            <EmptyState icon={<FiUsers />} title="No doctors yet"
-              message="Book an appointment to get started."
-              action={<Button variant="teal" size="sm" onClick={() => navigate('/patient/book')}>Book now</Button>} />
-          ) : doctors.map((d, i) => (
-            <div key={i} style={{ display:'flex', alignItems:'center', gap:'0.75rem', padding:'0.625rem 0.75rem', borderRadius:'var(--border-radius)', background:'var(--bg-secondary)', marginBottom:'0.5rem' }}>
-              <div style={{ width:36, height:36, borderRadius:'50%', background:'var(--color-slate-light)', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, fontSize:'var(--text-sm)', color:'var(--color-primary-light)', flexShrink:0 }}>
-                {d.doctor_name?.[0]}
-              </div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontWeight:600, fontSize:'var(--text-sm)' }} className="truncate">{d.doctor_name}</div>
-                <div style={{ fontSize:'var(--text-xs)', color:'var(--text-muted)' }}>
-                  {d.specialization} · {d.visit_count} visit{d.visit_count !== 1 ? 's' : ''}
-                </div>
-              </div>
-              <span style={{ fontSize:'var(--text-xs)', color:'var(--text-muted)', flexShrink:0 }}>
-                {new Date(d.last_visit).toLocaleDateString()}
-              </span>
+        <ChartCard title="Appointment status" description="Appointments grouped by status.">
+          {statusBreakdown.length === 0 ? <EmptyState icon={<FiCalendar />} title="No appointment activity yet" message="Your status summary will appear here." /> : (
+            <div className={styles.chart} role="img" aria-label={`Appointment status breakdown across ${statusBreakdown.length} statuses`}>
+              <ResponsiveContainer width="100%" height={205}><PieChart><Pie data={statusBreakdown} cx="50%" cy="50%" innerRadius={48} outerRadius={76} paddingAngle={3} dataKey="value">
+                {statusBreakdown.map((item, index) => <Cell key={item.name} fill={STATUS_COLORS[item.name] || TYPE_COLORS[index % TYPE_COLORS.length]} />)}
+              </Pie><Tooltip contentStyle={{ border: '1px solid #e5ecea', borderRadius: 10, fontSize: 12 }} /><Legend /></PieChart></ResponsiveContainer>
+              <ul className={styles.chartSummary}>{statusBreakdown.map(item => <li key={item.name}><span>{item.name.replace('_', ' ')}</span><strong>{item.value}</strong></li>)}</ul>
             </div>
-          ))}
-        </motion.div>
+          )}
+        </ChartCard>
       </div>
 
-      {/* Recent prescriptions */}
-      {prescriptions.length > 0 && (
-        <motion.div initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.5 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.25rem' }}>
-            <h3 style={{ fontWeight:700, display:'flex', alignItems:'center', gap:'0.5rem' }}>
-              <FiHeart color="var(--color-teal)" size={16} /> Active Prescriptions
-            </h3>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/patient/prescriptions')}>View all</Button>
-          </div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'0.875rem' }}>
-            {prescriptions.map(rx => {
+      <div className={styles.activityGrid}>
+        <section className={styles.listCard}>
+          <div className={styles.listHeading}><div><h3>My care team</h3><p>Doctors you’ve visited</p></div><Button variant="ghost" size="sm" onClick={() => navigate('/patient/appointments')}>Appointments <FiArrowRight /></Button></div>
+          {doctors.length === 0 ? <EmptyState icon={<FiUsers />} title="Your care team starts here" message="Book an appointment to connect with a doctor." action={<Button variant="teal" size="sm" onClick={() => navigate('/patient/book')}>Find an appointment</Button>} /> : (
+            <div className={styles.rows}>{doctors.map((doctor, index) => <article className={styles.personRow} key={`${doctor.doctor_name}-${index}`}>
+              <span className={styles.avatar}>{doctor.doctor_name?.[0] || 'D'}</span><div className={styles.rowText}><strong>{doctor.doctor_name}</strong><span>{doctor.specialization} · {doctor.visit_count} visit{doctor.visit_count !== 1 ? 's' : ''}</span></div><time dateTime={doctor.last_visit}>{new Date(doctor.last_visit).toLocaleDateString()}</time>
+            </article>)}</div>
+          )}
+        </section>
+
+        <section className={styles.listCard}>
+          <div className={styles.listHeading}><div><h3>Prescriptions</h3><p>Your current and recent medication details</p></div><Button variant="ghost" size="sm" onClick={() => navigate('/patient/prescriptions')}>View all <FiArrowRight /></Button></div>
+          {prescriptions.length === 0 ? <EmptyState icon={<FiFileText />} title="No prescriptions yet" message="Prescriptions from your care team will appear here." /> : (
+            <div className={styles.prescriptionList}>{prescriptions.slice(0, 4).map(rx => {
               const meds = (() => { try { return Array.isArray(rx.medication_details) ? rx.medication_details : JSON.parse(rx.medication_details || '[]') } catch { return [] } })()
-              return (
-                <div key={rx.id} style={{ background:'var(--bg-secondary)', borderRadius:'var(--border-radius)', padding:'0.875rem 1rem', border:'1px solid var(--border-color)' }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.375rem' }}>
-                    <div style={{ fontWeight:700, fontSize:'var(--text-sm)' }}>Dr. {rx.doctor_name}</div>
-                    <Badge label={rx.is_active ? 'Active' : 'Expired'} variant={rx.is_active ? 'active' : 'inactive'} />
-                  </div>
-                  {rx.diagnosis && <div style={{ fontSize:'var(--text-xs)', color:'var(--text-secondary)', marginBottom:'0.5rem', fontStyle:'italic' }}>{rx.diagnosis}</div>}
-                  <div style={{ display:'flex', gap:'0.375rem', flexWrap:'wrap' }}>
-                    {meds.slice(0,3).map((m, mi) => (
-                      <span key={mi} style={{ fontSize:'0.65rem', background:'var(--color-slate-light)', color:'var(--color-primary)', padding:'2px 7px', borderRadius:'9999px', fontWeight:600 }}>
-                        {m.name}
-                      </span>
-                    ))}
-                    {meds.length > 3 && <span style={{ fontSize:'0.65rem', color:'var(--text-muted)' }}>+{meds.length-3} more</span>}
-                  </div>
-                  <div style={{ fontSize:'var(--text-xs)', color:'var(--text-muted)', marginTop:'0.375rem' }}>
-                    {new Date(rx.created_at).toLocaleDateString()} · {rx.specialization}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </motion.div>
-      )}
+              return <article className={styles.prescription} key={rx.id}>
+                <div className={styles.prescriptionTop}><div><strong>Dr. {rx.doctor_name}</strong><span>{rx.specialization}</span></div><Badge label={rx.is_active ? 'Active' : 'Expired'} variant={rx.is_active ? 'active' : 'inactive'} /></div>
+                {rx.diagnosis && <p>{rx.diagnosis}</p>}
+                <div className={styles.medicationTags}>{meds.slice(0, 3).map((med, index) => <span key={`${med.name}-${index}`}>{med.name}</span>)}{meds.length > 3 && <small>+{meds.length - 3} more</small>}</div>
+                <time dateTime={rx.created_at}>{new Date(rx.created_at).toLocaleDateString()} · {rx.specialization}</time>
+              </article>
+            })}</div>
+          )}
+        </section>
+      </div>
+
+      <details className={styles.details}><summary>More health activity</summary><div className={styles.secondaryGrid}>
+        <Metric icon={<FiCalendar />} value={stats.total} label="Total appointments" note="All time" tone="purple" />
+        <Metric icon={<FiBell />} value={stats.unreadNotifs} label="Unread notifications" note="Check your notifications" tone="amber" />
+        <ChartCard title="Visit types" description="Visits grouped by appointment type.">
+          {typeBreakdown.length === 0 ? <p className={styles.emptyText}>No visit type data yet.</p> : (
+            <div className={styles.chart} role="img" aria-label={`Visit type breakdown across ${typeBreakdown.length} categories`}>
+              <ResponsiveContainer width="100%" height={210}><BarChart data={typeBreakdown} layout="vertical" barSize={22}><XAxis type="number" hide allowDecimals={false} /><YAxis type="category" dataKey="name" axisLine={false} tickLine={false} width={90} tick={{ fill: '#526872', fontSize: 12 }} /><Tooltip contentStyle={{ border: '1px solid #e5ecea', borderRadius: 10, fontSize: 12 }} /><Bar dataKey="value" name="Visits" fill="#00a98d" radius={[0, 5, 5, 0]} /></BarChart></ResponsiveContainer>
+              <ul className={styles.chartSummary}>{typeBreakdown.map(item => <li key={item.name}><span>{item.name.replace('_', ' ')}</span><strong>{item.value}</strong></li>)}</ul>
+            </div>
+          )}
+        </ChartCard>
+      </div></details>
     </div>
   )
 }
