@@ -9,12 +9,6 @@ import Button from '../../components/common/Button'
 import { Input } from '../../components/common/Input'
 import styles from './Login.module.css'
 
-const DEMO = [
-  { role:'Admin',   email:'adm@gmail.com',         password:'ThAdm@7234&JT1'  },
-  { role:'Doctor',  email:'doctor@gmail.com', password:'ThDoc@7234&JT1' },
-  { role:'Patient', email:'jerry@gmail.com',  password:'ThCan@7234&JT1'},
-]
-
 const Login = () => {
   const { login }  = useAuth()
   const navigate   = useNavigate()
@@ -82,7 +76,7 @@ const Login = () => {
           </Link>
           <span className={styles.panelEyebrow}>YOUR HEALTH, OUR PRIORITY</span>
           <h2 className={styles.tagline}>Care that stays connected to you.</h2>
-          <p className={styles.sub}>A simpler way to stay close to your care team and the details that matter to your health.</p>
+          <p className={styles.sub}>Book visits, connect with your care team, and keep your health information together in one secure place.</p>
           <div className={styles.features}>
             {[
               { icon:<FiCalendar size={16} />,     text:'Manage your appointments in one place' },
@@ -110,7 +104,7 @@ const Login = () => {
               transition={{ duration:0.35 }}>
               <span className={styles.formEyebrow}>PATIENT &amp; CARE TEAM PORTAL</span>
               <h1 className={styles.welcome}>Welcome back</h1>
-              <p className={styles.welcomeSub}>Sign in to continue to your Canon Care account.</p>
+              <p className={styles.welcomeSub}>Access your appointments, care team, and health records.</p>
               {error && <div className={styles.error}>{error}</div>}
               <form className={styles.form} onSubmit={handleCredentials}>
                 <Input label="Email address" name="email" type="email" value={form.email}
@@ -122,18 +116,6 @@ const Login = () => {
                 </div>
                 <Button type="submit" loading={loading} fullWidth size="lg">Sign In</Button>
               </form>
-              <div className={styles.divider}><span>or try a demo account</span></div>
-              <div className={styles.demoBox}>
-                <div className={styles.demoTitle}>Demo Credentials</div>
-                <div className={styles.demoGrid}>
-                  {DEMO.map(a => (
-                    <button key={a.role} className={styles.demoBtn} type="button"
-                      onClick={() => { setForm({ email:a.email, password:a.password }); setError('') }}>
-                      {a.role}
-                    </button>
-                  ))}
-                </div>
-              </div>
               <p className={styles.registerLink} style={{ marginTop:'1.5rem' }}>
                 Don&apos;t have an account? <Link to="/register">Sign up</Link>
               </p>
