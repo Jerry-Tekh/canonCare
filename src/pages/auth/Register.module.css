@@ -29,3 +29,13 @@
 @media(max-width:1000px){.page{grid-template-columns:minmax(270px,.75fr) minmax(500px,1.25fr)}.visual{padding:2rem}.content{padding:2.5rem 2rem}}
 @media(max-width:760px){.page{grid-template-columns:1fr}.visual{min-height:235px;padding:1.2rem 1.4rem 1.5rem;background-position:center 42%}.visualCopy{margin:2rem 0 0;max-width:580px}.visualCopy h2{font-size:2rem;margin:.55rem 0}.visualCopy>p{font-size:.82rem;line-height:1.55;max-width:500px}.trustNote{display:none}.content{min-height:auto;padding:2.1rem 1.4rem 3rem;align-items:flex-start}.formWrap{max-width:600px;padding:0}.formWrap h1{font-size:1.9rem}.intro{margin-bottom:1.2rem}.homeLink{font-size:.75rem}}
 @media(max-width:520px){.visual{min-height:185px;padding:1rem 1rem 1.2rem}.visualTop{align-items:flex-start}.logo{gap:.5rem}.logoMark{width:36px;height:36px;font-size:19px}.logo strong{font-size:1rem}.logo small{font-size:.48rem}.homeLink{padding-top:.6rem}.visualCopy{margin-top:1.2rem}.eyebrow,.formEyebrow{font-size:.58rem}.visualCopy h2{font-size:1.7rem;margin:.45rem 0}.visualCopy>p{font-size:.75rem}.content{padding:1.7rem 1rem 2.5rem}.mobileLogo{display:inline-flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--auth-ink);font:800 1rem 'Manrope','DM Sans',sans-serif;margin-bottom:1.3rem}.mobileLogo .logoMark{width:34px;height:34px;font-size:18px}.formEyebrow{margin-bottom:.55rem}.formWrap h1{font-size:1.75rem}.intro{font-size:.82rem}.pairGrid{grid-template-columns:1fr;gap:.85rem}.form{gap:.9rem}.signIn{margin-top:1rem}}
+
+/* Refined type scale, clearer navigation affordance, and focus states */
+.visualCopy h2{font-weight:650;letter-spacing:-.04em;line-height:1.12;color:#fff}
+.formWrap h1{font-weight:650;letter-spacing:-.035em;color:#203642}
+.eyebrow,.formEyebrow{font-weight:650;letter-spacing:.13em}
+.homeLink{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:.45rem .75rem;border:1px solid rgba(255,255,255,.58);border-radius:8px;background:rgba(15,38,49,.18);font-weight:600;transition:background .18s,border-color .18s}
+.homeLink:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.9);text-decoration:none}
+.signIn a{color:#007d69}
+.page :global(a:focus-visible),.page :global(button:focus-visible){outline:3px solid #00a88e;outline-offset:3px;border-radius:6px}
+.page :global(input:focus-visible),.page :global(select:focus-visible){outline:3px solid rgba(0,168,142,.3);outline-offset:2px}
