@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
@@ -101,6 +101,10 @@ const DashboardLayout = ({ children }) => {
   const navItems = navConfig[user?.role] || [];
   const title = pageTitle[location.pathname] || '';
 
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   const handleLogout = async () => {
     await logout();
     navigate('/login');
@@ -113,20 +117,21 @@ const DashboardLayout = ({ children }) => {
       {/* Mobile overlay */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div className={styles.overlay} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          <motion.button type="button" className={styles.overlay} aria-label="Close navigation menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={() => setMobileOpen(false)} />
         )}
       </AnimatePresence>
 
       {/* Sidebar */}
       <motion.aside
+        aria-label="Dashboard navigation"
         className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''} ${mobileOpen ? styles.mobileOpen : ''}`}
         initial={false}
         animate={{ width: collapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width)' }}
         transition={{ duration: 0.25, ease: 'easeInOut' }}
       >
         {/* Logo */}
-        <div className={styles.sidebarLogo}>
+        <Link to={`/${user?.role}`} className={styles.sidebarLogo} aria-label="Canon Care dashboard">
           <div className={styles.logoIcon}><GiMedicalPack style={{ color: '#fff', fontSize: '1.25rem' }} /></div>
           {!collapsed && (
             <div>
@@ -134,10 +139,10 @@ const DashboardLayout = ({ children }) => {
               <div className={styles.logoSub}>HMS Platform</div>
             </div>
           )}
-        </div>
+        </Link>
 
         {/* Navigation */}
-        <nav className={styles.nav}>
+        <nav className={styles.nav} aria-label="Main">
           {navItems.map(section => (
             <div className={styles.navSection} key={section.section}>
               {!collapsed && <div className={styles.navSectionTitle}>{section.section}</div>}
@@ -158,13 +163,13 @@ const DashboardLayout = ({ children }) => {
         </nav>
 
         {/* Collapse toggle (desktop only) */}
-        <button className={styles.collapseBtn} onClick={() => setCollapsed(c => !c)}>
+        <button className={styles.collapseBtn} type="button" aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} onClick={() => setCollapsed(c => !c)}>
           {collapsed ? <FiChevronRight /> : <FiChevronLeft />}
         </button>
 
         {/* User footer */}
         <div className={styles.sidebarFooter}>
-          <div className={styles.userCard} onClick={handleLogout}>
+          <div className={styles.userCard}>
             <div className={styles.userAvatar}>
               {user?.avatar_url ? <img src={user.avatar_url} alt={user.name} /> : initials}
             </div>
@@ -174,7 +179,9 @@ const DashboardLayout = ({ children }) => {
                 <div className={styles.userRole}>{user?.role}</div>
               </div>
             )}
-            {!collapsed && <FiLogOut style={{ color: 'rgba(255,255,255,0.5)', flexShrink: 0 }} />}
+            <button type="button" className={styles.logoutBtn} onClick={handleLogout} aria-label="Sign out" title="Sign out">
+              <FiLogOut />
+            </button>
           </div>
         </div>
       </motion.aside>
@@ -183,16 +190,16 @@ const DashboardLayout = ({ children }) => {
       <div className={`${styles.main} ${collapsed ? styles.collapsed : ''}`}>
         {/* Topbar */}
         <header className={styles.topbar}>
-          <button className={styles.topbarBtn} onClick={() => setMobileOpen(o => !o)} aria-label="Toggle menu">
+          <button className={styles.topbarBtn} type="button" onClick={() => setMobileOpen(o => !o)} aria-label={mobileOpen ? 'Close menu' : 'Open menu'} aria-expanded={mobileOpen}>
             <FiMenu />
           </button>
           {title && <h1 className={styles.topbarTitle}>{title}</h1>}
           <div className={styles.topbarRight}>
-            <button className={styles.topbarBtn} onClick={() => navigate(`/${user?.role}/notifications`)}>
+            <button className={styles.topbarBtn} type="button" onClick={() => navigate(`/${user?.role}/notifications`)} aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}>
               <FiBell />
               {unreadCount > 0 && <span className={styles.notifBadge}>{unreadCount > 9 ? '9+' : unreadCount}</span>}
             </button>
-            <button className={styles.topbarBtn} onClick={() => navigate(`/${user?.role}/settings`)}>
+            <button className={styles.topbarBtn} type="button" onClick={() => navigate(`/${user?.role}/settings`)} aria-label="Settings">
               <FiSettings />
             </button>
           </div>

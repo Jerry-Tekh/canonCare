@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  FiUsers, FiCalendar, FiCheckCircle, FiClock,
-  FiTrendingUp, FiAlertTriangle, FiStar, FiActivity,
+  FiUsers, FiCalendar, FiCheckCircle, FiClock, FiTrendingUp,
+  FiAlertTriangle, FiStar, FiActivity, FiArrowRight,
 } from 'react-icons/fi'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -11,37 +11,36 @@ import {
   AreaChart, Area, Legend,
 } from 'recharts'
 import { useAuth } from '../../context/AuthContext'
-import useBreakpoint from '../../hooks/useBreakpoint'
 import api from '../../services/api'
-import { StatCard } from '../../components/common/Card'
 import Badge from '../../components/common/Badge'
 import Button from '../../components/common/Button'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import EmptyState from '../../components/common/EmptyState'
+import styles from './DoctorDashboard.module.css'
 
-const STATUS_COLORS = {
-  completed:   '#059669',
-  pending:     '#d97706',
-  cancelled:   '#6b7280',
-  accepted:    '#2563b0',
-  rescheduled: '#7c3aed',
-  no_show:     '#dc2626',
-}
+const STATUS_COLORS = { completed:'#00a98d', pending:'#d58b18', cancelled:'#82919a', accepted:'#493077', rescheduled:'#8971b1', no_show:'#c94d4d' }
+const PIE_COLORS = ['#00a98d','#493077','#d58b18','#4b9fc2','#c94d4d','#82919a']
 
-const PIE_COLORS = ['#2563b0','#059669','#d97706','#7c3aed','#dc2626','#6b7280']
+const Metric = ({ icon, value, label, note, tone = 'teal' }) => (
+  <article className={`${styles.metric} ${styles[tone]}`}>
+    <span className={styles.metricIcon}>{icon}</span>
+    <div className={styles.metricCopy}><span className={styles.metricValue}>{value}</span><span className={styles.metricLabel}>{label}</span>{note && <span className={styles.metricNote}>{note}</span>}</div>
+  </article>
+)
 
-const cardVariants = {
-  hidden:  { opacity: 0, y: 20 },
-  visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.35 } }),
-}
+const ChartCard = ({ title, description, children, className = '' }) => (
+  <section className={`${styles.chartCard} ${className}`}>
+    <div className={styles.cardHeading}><h3>{title}</h3>{description && <p>{description}</p>}</div>
+    {children}
+  </section>
+)
 
 const DoctorDashboard = () => {
-  const { user }  = useAuth()
-  const { isMobile, isTablet } = useBreakpoint()
-  const navigate  = useNavigate()
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const [analytics, setAnalytics] = useState(null)
-  const [loading,   setLoading]   = useState(true)
-  const [error,     setError]     = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const load = async () => {
@@ -57,239 +56,91 @@ const DoctorDashboard = () => {
     load()
   }, [])
 
-  if (loading) return (
-    <div style={{ display:'flex', justifyContent:'center', padding:'4rem' }}>
-      <LoadingSpinner />
-    </div>
-  )
-
-  if (error) return (
-    <div style={{ textAlign:'center', padding:'3rem', color:'var(--color-error)' }}>{error}</div>
-  )
+  if (loading) return <div className={styles.state}><LoadingSpinner /></div>
+  if (error) return <div className={styles.stateError} role="alert">{error}</div>
 
   const { stats, weekly, monthly, statusBreakdown, typeBreakdown, topPatients, recent, rating } = analytics
-
-  const firstName = user?.name?.split(' ')[0]
-  const hour      = new Date().getHours()
-  const greeting  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const firstName = user?.name?.split(' ')[0] || 'Doctor'
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const todayLabel = new Date().toLocaleDateString('default', { weekday:'long', month:'long', day:'numeric' })
+  const weekAppointments = weekly.reduce((sum, day) => sum + Number(day.appointments || 0), 0)
+  const weekCompleted = weekly.reduce((sum, day) => sum + Number(day.completed || 0), 0)
+  const latestRating = rating?.slice(-1)[0]?.avg_rating ?? '—'
 
   return (
-    <div style={{ display:'flex', flexDirection:'column', gap:'1.75rem' }}>
+    <div className={styles.dashboard}>
+      <motion.header className={styles.pageHeader} initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }}>
+        <div><span className={styles.eyebrow}>CLINICAL OVERVIEW</span><h2>{greeting}, Dr. {firstName}</h2><p>{todayLabel} · Here’s your practice at a glance.</p></div>
+        <Button variant="teal" onClick={() => navigate('/doctor/appointments')}><FiCalendar /> View appointments <FiArrowRight /></Button>
+      </motion.header>
 
-      {/* Greeting */}
-      <motion.div initial={{ opacity:0, y:-12 }} animate={{ opacity:1, y:0 }}>
-        <h2 style={{ fontSize:'var(--text-3xl)', fontWeight:800, marginBottom:'0.25rem' }}>
-          {greeting}, Dr. {firstName} 
-        </h2>
-        <p style={{ color:'var(--text-secondary)' }}>
-          Here's your clinical overview — {new Date().toLocaleDateString('default', { weekday:'long', month:'long', day:'numeric' })}
-        </p>
-      </motion.div>
+      {stats.pending > 3 && <div className={styles.attention} role="status"><FiAlertTriangle /><div><strong>{stats.pending} appointments need your attention</strong><span>Review pending requests when you’re ready.</span></div><Button variant="ghost" size="sm" onClick={() => navigate('/doctor/appointments')}>Review</Button></div>}
 
-      {/* Stat cards */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(250px,1fr))', gap:'1rem' }}>
-        {[
-          { icon:<FiCalendar />,    value: stats.total,          label:'Total Appointments', color:'#dbeafe', iconColor:'#2563b0', change:'+12% this month', changeType:'up' },
-          { icon:<FiClock />,       value: stats.pending,         label:'Awaiting Response',  color:'#fef3c7', iconColor:'#d97706', change: stats.pending > 0 ? 'Needs attention' : 'All clear', changeType: stats.pending > 0 ? 'down' : 'up' },
-          { icon:<FiUsers />,       value: stats.today,           label:"Today's Patients",   color:'#d1fae5', iconColor:'#059669', change:'Scheduled today',  changeType:'up' },
-          { icon:<FiCheckCircle />, value: stats.completed,       label:'Completed',          color:'#ede9fe', iconColor:'#7c3aed', change:'All time',         changeType:'up' },
-          { icon:<FiUsers />,       value: stats.uniquePatients,  label:'Unique Patients',    color:'#ccfbf1', iconColor:'#0d9488', change:'All time',         changeType:'up' },
-          { icon:<FiStar />,        value: `${analytics.rating?.slice(-1)[0]?.avg_rating || '—'}`, label:'Avg Rating', color:'#fef9c3', iconColor:'#ca8a04', change:'Last month', changeType:'up' },
-        ].map((s, i) => (
-          <motion.div key={s.label} custom={i} variants={cardVariants} initial="hidden" animate="visible">
-            <StatCard {...s} />
-          </motion.div>
-        ))}
+      <section className={styles.metricGrid} aria-label="Practice summary">
+        <Metric icon={<FiCalendar />} value={stats.total} label="Total appointments" note="All time" />
+        <Metric icon={<FiClock />} value={stats.pending} label="Awaiting response" note={stats.pending > 0 ? 'Review when available' : 'You’re all caught up'} tone={stats.pending ? 'amber' : 'teal'} />
+        <Metric icon={<FiUsers />} value={stats.today} label="Patients today" note="Scheduled today" tone="purple" />
+        <Metric icon={<FiCheckCircle />} value={stats.completed} label="Completed visits" note="All time" tone="blue" />
+      </section>
+
+      <div className={styles.primaryCharts}>
+        <ChartCard title="Appointments this week" description={`${weekAppointments} appointments · ${weekCompleted} completed`}>
+          {weekly.every(day => day.appointments === 0) ? <EmptyState icon={<FiCalendar />} title="No appointments this week" message="Your weekly activity will appear here." /> : (
+            <div className={styles.chart} role="img" aria-label={`${weekAppointments} appointments and ${weekCompleted} completed over the last seven days`}>
+              <ResponsiveContainer width="100%" height={240}><BarChart data={weekly} barSize={25} barGap={5}>
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill:'#647780', fontSize:12 }} />
+                <YAxis hide allowDecimals={false} /><Tooltip contentStyle={{ border:'1px solid #e5ecea', borderRadius:10, fontSize:12 }} formatter={(v,n) => [v, n === 'appointments' ? 'Total' : 'Completed']} />
+                <Legend /><Bar dataKey="appointments" name="Total" fill="#bcece2" radius={[6,6,0,0]} /><Bar dataKey="completed" name="Completed" fill="#00a98d" radius={[6,6,0,0]} />
+              </BarChart></ResponsiveContainer>
+            </div>
+          )}
+        </ChartCard>
+        <ChartCard title="Six-month activity" description="Appointment totals and completed visits by month.">
+          {monthly.length === 0 ? <EmptyState icon={<FiActivity />} title="No history yet" message="Monthly activity will appear as appointments are recorded." /> : (
+            <div className={styles.chart} role="img" aria-label="Area chart comparing total appointments with completed visits across the last six months">
+              <ResponsiveContainer width="100%" height={240}><AreaChart data={monthly}>
+                <defs><linearGradient id="doctorTotal" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#493077" stopOpacity={.18} /><stop offset="95%" stopColor="#493077" stopOpacity={0} /></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#eaf0ee" /><XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill:'#647780', fontSize:11 }} /><YAxis hide allowDecimals={false} />
+                <Tooltip contentStyle={{ border:'1px solid #e5ecea', borderRadius:10, fontSize:12 }} /><Legend />
+                <Area type="monotone" dataKey="total" name="Total" stroke="#493077" fill="url(#doctorTotal)" strokeWidth={2.5} dot={{ r:3 }} /><Area type="monotone" dataKey="completed" name="Completed" stroke="#00a98d" fill="none" strokeWidth={2} dot={{ r:3 }} />
+              </AreaChart></ResponsiveContainer>
+            </div>
+          )}
+        </ChartCard>
       </div>
 
-      {/* Weekly bar + Monthly area */}
-      <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'1.5rem' }}>
-
-        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.3 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <h3 style={{ fontWeight:700, marginBottom:'1.25rem', display:'flex', alignItems:'center', gap:'0.5rem' }}>
-            <FiTrendingUp color="var(--color-teal)" /> Last 7 Days
-          </h3>
-          {weekly.every(d => d.appointments === 0) ? (
-            <div style={{ textAlign:'center', padding:'2rem', color:'var(--text-muted)', fontSize:'var(--text-sm)' }}>
-              No appointments in the last 7 days
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={weekly} barSize={28} barGap={4}>
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill:'#94a3b8', fontSize:12 }} />
-                <YAxis hide allowDecimals={false} />
-                <Tooltip contentStyle={{ border:'none', borderRadius:8, boxShadow:'var(--shadow-md)', fontSize:13 }}
-                  formatter={(v, n) => [v, n === 'appointments' ? 'Total' : 'Completed']} />
-                <Legend style={{ fontSize:12 }} />
-                <Bar dataKey="appointments" name="Total"     fill="#dbeafe" radius={[4,4,0,0]} />
-                <Bar dataKey="completed"    name="Completed" fill="#2563b0"  radius={[4,4,0,0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </motion.div>
-
-        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.35 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <h3 style={{ fontWeight:700, marginBottom:'1.25rem', display:'flex', alignItems:'center', gap:'0.5rem' }}>
-            <FiActivity color="var(--color-teal)" /> 6-Month Trend
-          </h3>
-          {monthly.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'2rem', color:'var(--text-muted)', fontSize:'var(--text-sm)' }}>No historical data yet</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={monthly}>
-                <defs>
-                  <linearGradient id="totalGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#2563b0" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#2563b0" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="completedGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#059669" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#059669" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill:'#94a3b8', fontSize:11 }} />
-                <YAxis hide allowDecimals={false} />
-                <Tooltip contentStyle={{ border:'none', borderRadius:8, fontSize:12 }} />
-                <Legend style={{ fontSize:12 }} />
-                <Area type="monotone" dataKey="total"     name="Total"     stroke="#2563b0" fill="url(#totalGrad)"     strokeWidth={2} dot={{ r:3 }} />
-                <Area type="monotone" dataKey="completed" name="Completed" stroke="#059669" fill="url(#completedGrad)" strokeWidth={2} dot={{ r:3 }} />
-              </AreaChart>
-            </ResponsiveContainer>
-          )}
-        </motion.div>
+      <div className={styles.activityGrid}>
+        <section className={styles.listCard}>
+          <div className={styles.listHeading}><div><h3>Recent appointments</h3><p>Your latest patient visits</p></div><Button variant="ghost" size="sm" onClick={() => navigate('/doctor/appointments')}>View all <FiArrowRight /></Button></div>
+          {recent.length === 0 ? <EmptyState icon={<FiCalendar />} title="No appointments yet" message="Recent appointments will appear here." /> : <div className={styles.rows}>{recent.map(appointment => <article className={styles.personRow} key={appointment.id}>
+            <span className={styles.avatar}>{appointment.patient_name?.[0] || 'P'}</span><div className={styles.rowText}><strong>{appointment.patient_name}</strong><span>{new Date(appointment.appointment_time).toLocaleDateString()} · {appointment.type?.replace('_',' ')}</span></div><Badge label={appointment.status} variant={appointment.status} />
+          </article>)}</div>}
+        </section>
+        <section className={styles.listCard}>
+          <div className={styles.listHeading}><div><h3>Most-seen patients</h3><p>Patients with the most visits</p></div><Button variant="ghost" size="sm" onClick={() => navigate('/doctor/patients')}>View patients <FiArrowRight /></Button></div>
+          {topPatients.length === 0 ? <EmptyState icon={<FiUsers />} title="No patients yet" message="Patient activity will appear here." /> : <div className={styles.rows}>{topPatients.map((patient,index) => <article className={styles.personRow} key={`${patient.patient_name}-${index}`}>
+            <span className={styles.avatar}>{patient.patient_name?.[0] || 'P'}</span><div className={styles.rowText}><strong>{patient.patient_name}</strong><span>{patient.visit_count} visit{patient.visit_count !== 1 ? 's' : ''} · Last: {new Date(patient.last_visit).toLocaleDateString()}</span></div><span className={styles.rank}>#{index + 1}</span>
+          </article>)}</div>}
+        </section>
       </div>
 
-      {/* Status pie + Type donut + Rating line */}
-      <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)', gap:'1.5rem' }}>
-
-        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.4 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <h3 style={{ fontWeight:700, marginBottom:'1.25rem', fontSize:'var(--text-base)' }}>Appointment Status</h3>
-          {statusBreakdown.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'2rem', color:'var(--text-muted)', fontSize:'var(--text-sm)' }}>No data</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={180}>
-              <PieChart>
-                <Pie data={statusBreakdown} cx="50%" cy="50%" innerRadius={45} outerRadius={72} paddingAngle={3} dataKey="value">
-                  {statusBreakdown.map((entry, i) => (
-                    <Cell key={i} fill={STATUS_COLORS[entry.name] || PIE_COLORS[i % PIE_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ border:'none', borderRadius:8, fontSize:12 }} formatter={(v,n) => [v, n]} />
-                <Legend iconType="circle" iconSize={8} style={{ fontSize:11 }} />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </motion.div>
-
-        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.45 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <h3 style={{ fontWeight:700, marginBottom:'1.25rem', fontSize:'var(--text-base)' }}>Visit Types</h3>
-          {typeBreakdown.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'2rem', color:'var(--text-muted)', fontSize:'var(--text-sm)' }}>No data</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={180}>
-              <PieChart>
-                <Pie data={typeBreakdown} cx="50%" cy="50%" innerRadius={45} outerRadius={72} paddingAngle={3} dataKey="value">
-                  {typeBreakdown.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                </Pie>
-                <Tooltip contentStyle={{ border:'none', borderRadius:8, fontSize:12 }} />
-                <Legend iconType="circle" iconSize={8} style={{ fontSize:11 }} />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </motion.div>
-
-        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.5 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <h3 style={{ fontWeight:700, marginBottom:'1.25rem', fontSize:'var(--text-base)' }}>Rating Trend</h3>
-          {rating.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'2rem', color:'var(--text-muted)', fontSize:'var(--text-sm)' }}>No reviews yet</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={rating}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill:'#94a3b8', fontSize:11 }} />
-                <YAxis domain={[0, 5]} hide />
-                <Tooltip contentStyle={{ border:'none', borderRadius:8, fontSize:12 }} formatter={(v) => [`${v} ⭐`, 'Avg Rating']} />
-                <Line type="monotone" dataKey="avg_rating" stroke="#ca8a04" strokeWidth={2.5} dot={{ r:4, fill:'#ca8a04' }} />
-              </LineChart>
-            </ResponsiveContainer>
-          )}
-        </motion.div>
-      </div>
-
-      {/* Top patients + Recent appointments */}
-      <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:'1.5rem' }}>
-
-        <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.5 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.25rem' }}>
-            <h3 style={{ fontWeight:700 }}>Top Patients</h3>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/doctor/patients')}>View all</Button>
-          </div>
-          {topPatients.length === 0 ? (
-            <EmptyState icon={<FiUsers />} title="No patients yet" />
-          ) : topPatients.map((p, i) => (
-            <div key={i} style={{ display:'flex', alignItems:'center', gap:'0.75rem', padding:'0.625rem 0.75rem', borderRadius:'var(--border-radius)', background:'var(--bg-secondary)', marginBottom:'0.5rem' }}>
-              <div style={{ width:36, height:36, borderRadius:'50%', background:'var(--color-slate-light)', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, fontSize:'var(--text-sm)', color:'var(--color-primary-light)', flexShrink:0 }}>
-                {p.patient_name?.[0]}
-              </div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontWeight:600, fontSize:'var(--text-sm)' }} className="truncate">{p.patient_name}</div>
-                <div style={{ fontSize:'var(--text-xs)', color:'var(--text-muted)' }}>
-                  {p.visit_count} visit{p.visit_count !== 1 ? 's' : ''} · Last: {new Date(p.last_visit).toLocaleDateString()}
-                </div>
-              </div>
-              <span style={{ fontSize:'var(--text-xs)', fontWeight:700, color:'var(--color-teal)', background:'var(--color-teal-light)', padding:'2px 8px', borderRadius:'9999px' }}>
-                #{i + 1}
-              </span>
-            </div>
-          ))}
-        </motion.div>
-
-        <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.55 }}
-          style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding:'1.5rem', boxShadow:'var(--shadow-sm)' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.25rem' }}>
-            <h3 style={{ fontWeight:700 }}>Recent Appointments</h3>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/doctor/appointments')}>View all</Button>
-          </div>
-          {recent.length === 0 ? (
-            <EmptyState icon={<FiCalendar />} title="No appointments yet" />
-          ) : recent.map((a) => (
-            <div key={a.id} style={{ display:'flex', alignItems:'center', gap:'0.75rem', padding:'0.625rem 0.75rem', borderRadius:'var(--border-radius)', background:'var(--bg-secondary)', marginBottom:'0.5rem' }}>
-              <div style={{ width:36, height:36, borderRadius:'50%', background:'var(--color-slate-light)', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, fontSize:'var(--text-sm)', color:'var(--color-primary-light)', flexShrink:0 }}>
-                {a.patient_name?.[0]}
-              </div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontWeight:600, fontSize:'var(--text-sm)' }} className="truncate">{a.patient_name}</div>
-                <div style={{ fontSize:'var(--text-xs)', color:'var(--text-muted)' }}>
-                  {new Date(a.appointment_time).toLocaleDateString()} · {a.type?.replace('_',' ')}
-                </div>
-              </div>
-              <Badge label={a.status} variant={a.status} />
-            </div>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Emergency alert if pending > 3 */}
-      {stats.pending > 3 && (
-        <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.6 }}
-          style={{ background:'#fff7ed', border:'1px solid #fed7aa', borderRadius:'var(--border-radius-lg)', padding:'1.25rem 1.5rem', display:'flex', alignItems:'center', gap:'1rem' }}>
-          <FiAlertTriangle size={24} color="#f59e0b" style={{ flexShrink:0 }} />
-          <div style={{ flex:1 }}>
-            <div style={{ fontWeight:700, color:'#92400e' }}>
-              {stats.pending} appointment{stats.pending !== 1 ? 's' : ''} awaiting your response
-            </div>
-            <div style={{ fontSize:'var(--text-sm)', color:'#b45309' }}>Review and accept or decline pending appointments.</div>
-          </div>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/doctor/appointments')}>Review</Button>
-        </motion.div>
-      )}
+      <details className={styles.details}>
+        <summary>More practice insights</summary>
+        <div className={styles.secondaryCharts}>
+          <ChartCard title="Appointment status" description="Status counts; labels and values are available in the chart tooltip.">
+            {statusBreakdown.length === 0 ? <p className={styles.emptyText}>No appointment status data yet.</p> : <div className={styles.chart} role="img" aria-label={`Appointment status breakdown across ${statusBreakdown.length} statuses`}><ResponsiveContainer width="100%" height={220}><PieChart><Pie data={statusBreakdown} cx="50%" cy="50%" innerRadius={48} outerRadius={76} paddingAngle={3} dataKey="value">{statusBreakdown.map((item,index)=><Cell key={item.name} fill={STATUS_COLORS[item.name] || PIE_COLORS[index % PIE_COLORS.length]} />)}</Pie><Tooltip contentStyle={{ border:'1px solid #e5ecea', borderRadius:10, fontSize:12 }} /><Legend /></PieChart></ResponsiveContainer><ul className={styles.chartSummary}>{statusBreakdown.map(item=><li key={item.name}><span>{item.name.replace('_',' ')}</span><strong>{item.value}</strong></li>)}</ul></div>}
+          </ChartCard>
+          <ChartCard title="Visit types" description="Appointments grouped by visit type.">
+            {typeBreakdown.length === 0 ? <p className={styles.emptyText}>No visit type data yet.</p> : <div className={styles.chart} role="img" aria-label={`Visit type breakdown across ${typeBreakdown.length} categories`}><ResponsiveContainer width="100%" height={220}><PieChart><Pie data={typeBreakdown} cx="50%" cy="50%" innerRadius={48} outerRadius={76} paddingAngle={3} dataKey="value">{typeBreakdown.map((item,index)=><Cell key={item.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />)}</Pie><Tooltip contentStyle={{ border:'1px solid #e5ecea', borderRadius:10, fontSize:12 }} /><Legend /></PieChart></ResponsiveContainer><ul className={styles.chartSummary}>{typeBreakdown.map(item=><li key={item.name}><span>{item.name.replace('_',' ')}</span><strong>{item.value}</strong></li>)}</ul></div>}
+          </ChartCard>
+          <ChartCard title="Patient rating trend" description={`Latest monthly average rating: ${latestRating} out of 5.`}>
+            {rating.length === 0 ? <EmptyState icon={<FiStar />} title="No reviews yet" message="Ratings will appear when patients leave feedback." /> : <div className={styles.chart} role="img" aria-label={`Patient rating trend with a latest average rating of ${latestRating} out of five`}><ResponsiveContainer width="100%" height={220}><LineChart data={rating}><CartesianGrid strokeDasharray="3 3" stroke="#eaf0ee" /><XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill:'#647780', fontSize:11 }} /><YAxis domain={[0,5]} hide /><Tooltip contentStyle={{ border:'1px solid #e5ecea', borderRadius:10, fontSize:12 }} formatter={value => [`${value} / 5`, 'Average rating']} /><Line type="monotone" dataKey="avg_rating" name="Average rating" stroke="#d58b18" strokeWidth={2.5} dot={{ r:4, fill:'#d58b18' }} /></LineChart></ResponsiveContainer></div>}
+          </ChartCard>
+          <Metric icon={<FiUsers />} value={stats.uniquePatients} label="Unique patients" note="All time" tone="purple" />
+          <Metric icon={<FiStar />} value={latestRating} label="Latest average rating" note="Out of 5" tone="amber" />
+        </div>
+      </details>
     </div>
   )
 }
