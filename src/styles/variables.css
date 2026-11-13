@@ -63,19 +63,19 @@
   --font-display: 'Sora', 'DM Sans', sans-serif;
   --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
 
-  --text-xs:   0.75rem;    /* 12px */
-  --text-sm:   0.875rem;   /* 14px */
-  --text-base: 1rem;       /* 16px */
-  --text-lg:   1.125rem;   /* 18px */
-  --text-xl:   1.25rem;    /* 20px */
-  --text-2xl:  1.5rem;     /* 24px */
-  --text-3xl:  1.875rem;   /* 30px */
-  --text-4xl:  2.25rem;    /* 36px */
-  --text-5xl:  3rem;       /* 48px */
+  --text-xs:   0.8125rem;  /* 13px: supporting labels and metadata */
+  --text-sm:   0.9375rem;  /* 15px: secondary copy */
+  --text-base: 1.0625rem;  /* 17px: standard reading size */
+  --text-lg:   1.1875rem;  /* 19px */
+  --text-xl:   1.3125rem;  /* 21px */
+  --text-2xl:  1.5625rem;  /* 25px */
+  --text-3xl:  1.9375rem;  /* 31px */
+  --text-4xl:  2.3125rem;  /* 37px */
+  --text-5xl:  3.0625rem;  /* 49px */
 
   --line-height-tight:  1.3;
-  --line-height-normal: 1.6;
-  --line-height-loose:  1.8;
+  --line-height-normal: 1.65;
+  --line-height-loose:  1.85;
 
   /* ── Spacing ── */
   --space-1:  0.25rem;

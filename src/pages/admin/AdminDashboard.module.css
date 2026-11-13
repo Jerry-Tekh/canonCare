@@ -10,3 +10,7 @@
 @media(max-width:400px){.dashboard{gap:1rem}.pageHeader h2{font-size:1.5rem}.metricGrid,.secondaryMetrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem}.metric{min-height:78px;gap:.55rem;padding:.72rem .62rem}.metricIcon{width:34px;height:34px;border-radius:10px;font-size:1rem}.metricIcon :global(svg){width:1rem;height:1rem}.metric strong{font-size:1.28rem}.metric div>span{font-size:.69rem;line-height:1.3}.metric small{font-size:.64rem}.chartCard,.quickActions{padding:.85rem}.actionGrid{grid-template-columns:1fr;gap:.6rem}.actionGrid button{min-height:64px}}
 @media(max-width:350px){.metricGrid,.secondaryMetrics{grid-template-columns:1fr}.metric{min-height:68px}.metric div>span{font-size:.75rem}}
 @media(prefers-reduced-motion:reduce){.dashboard *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Readable dashboard body copy with consistent Apple-inspired rhythm */
+.pageHeader p{font-size:.96rem;line-height:1.65}.eyebrow{font-size:.72rem}.metric div>span{font-size:.84rem;line-height:1.4}.metric small{font-size:.75rem}.cardHeading p{font-size:.84rem;line-height:1.6}.details summary{font-size:.9rem;padding:1.05rem 1.2rem}.actionGrid strong{font-size:.86rem}.actionGrid small{font-size:.76rem;line-height:1.5}
+@media(max-width:400px){.metric div>span{font-size:.76rem}.metric small{font-size:.7rem}.details summary{padding:.9rem 1rem}}
