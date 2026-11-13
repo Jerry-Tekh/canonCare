@@ -14,3 +14,7 @@
 /* Readable dashboard body copy with consistent Apple-inspired rhythm */
 .pageHeader p{font-size:.96rem;line-height:1.65}.eyebrow{font-size:.72rem}.metric div>span{font-size:.84rem;line-height:1.4}.metric small{font-size:.75rem}.cardHeading p,.listHeading p{font-size:.84rem;line-height:1.6}.details summary{font-size:.9rem;padding:1.05rem 1.2rem}.rowText span,.personRow time{font-size:.76rem}.prescriptionTop span,.prescription time{font-size:.75rem}
 @media(max-width:400px){.metric div>span{font-size:.76rem}.metric small{font-size:.7rem}.details summary{padding:.9rem 1rem}}
+
+/* Keep metric glyphs optically centered in every card size. */
+.metricIcon{align-items:center;justify-content:center;line-height:0}.metricIcon :global(svg){display:block;width:1.2rem;height:1.2rem;flex:0 0 auto;margin:0}
+@media(max-width:400px){.metricIcon :global(svg){width:1.05rem;height:1.05rem}}
