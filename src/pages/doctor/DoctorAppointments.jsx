@@ -10,6 +10,7 @@ import Modal from '../../components/common/Modal'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import EmptyState from '../../components/common/EmptyState'
 import useBreakpoint from '../../hooks/useBreakpoint'
+import styles from './DoctorAppointments.module.css'
 
 const DoctorAppointments = () => {
   const { toast }    = useToast() || {}
@@ -52,14 +53,14 @@ const DoctorAppointments = () => {
   const openAction = (apptId, action) => setActionModal({ open:true, action, apptId })
 
   return (
-    <div style={{ display:'flex', flexDirection:'column', gap:'1.5rem' }}>
+    <div className={styles.page}>
       {/* Header */}
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:'1rem' }}>
+      <div className={styles.header}>
         <div>
           <h2 style={{ fontSize:'var(--text-2xl)', fontWeight:800 }}>Appointments</h2>
           <p style={{ color:'var(--text-secondary)', fontSize:'var(--text-sm)' }}>Manage patient appointments</p>
         </div>
-        <div style={{ display:'flex', gap:'0.625rem', alignItems:'center' }}>
+        <div className={styles.filters}>
           <FiFilter color="var(--text-muted)" size={14} />
           <Select value={filter} onChange={e => setFilter(e.target.value)} style={{ minWidth:isMobile ? 130 : 150 }}>
             <option value="">All statuses</option>
@@ -77,19 +78,19 @@ const DoctorAppointments = () => {
       ) : appointments.length === 0 ? (
         <EmptyState icon={<FiCalendar />} title="No appointments found" message="No appointments match the selected filter." />
       ) : (
-        <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
+        <div className={styles.list}>
           {appointments.map((a, i) => (
             <motion.div key={a.id} initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ delay:i*0.04 }}
-              style={{ background:'#fff', border:'1px solid var(--border-color)', borderRadius:'var(--border-radius-lg)', padding: isMobile ? '1rem' : '1.25rem 1.5rem', display:'flex', alignItems:'flex-start', gap:'0.875rem', flexWrap:'wrap', boxShadow:'var(--shadow-sm)', cursor:'pointer' }}
+              className={styles.appointmentCard}
               onClick={() => setSelected(a)}>
 
-              <div style={{ width:44, height:44, borderRadius:'50%', background:'var(--color-slate-light)', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, fontSize:'var(--text-base)', color:'var(--color-primary-light)', flexShrink:0 }}>
+              <div className={styles.avatar}>
                 {a.patient_name?.[0]}
               </div>
 
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontWeight:700, marginBottom:'0.25rem' }}>{a.patient_name}</div>
-                <div style={{ fontSize:'var(--text-sm)', color:'var(--text-secondary)', display:'flex', gap:'0.75rem', flexWrap:'wrap' }}>
+              <div className={styles.patientInfo}>
+                <div className={styles.patientName}>{a.patient_name}</div>
+                <div className={styles.metadata}>
                   <span style={{ display:'flex', alignItems:'center', gap:'0.25rem' }}>
                     <FiCalendar size={12} /> {new Date(a.appointment_time).toLocaleDateString()}
                   </span>
@@ -98,22 +99,20 @@ const DoctorAppointments = () => {
                   </span>
                   <span style={{ textTransform:'capitalize' }}>· {a.type?.replace('_', ' ')}</span>
                 </div>
-                {a.reason && (
-                  <div style={{ fontSize:'var(--text-xs)', color:'var(--text-muted)', marginTop:'0.25rem' }} className="truncate">{a.reason}</div>
-                )}
+                {a.reason && <div className={styles.reason}>{a.reason}</div>}
               </div>
 
-              <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', flexWrap:'wrap', flexShrink:0 }}>
+              <div className={styles.actionArea}>
                 <Badge label={a.status} variant={a.status} />
                 {a.status === 'pending' && (
-                  <div style={{ display:'flex', gap:'0.375rem', flexWrap:'wrap' }} onClick={e => e.stopPropagation()}>
+                  <div className={styles.actionButtons} onClick={e => e.stopPropagation()}>
                     <Button variant="teal"   size="sm" onClick={() => openAction(a.id,'accepted')}><FiCheck />{!isMobile && ' Accept'}</Button>
                     <Button variant="danger" size="sm" onClick={() => openAction(a.id,'rejected')}><FiX />{!isMobile && ' Reject'}</Button>
                     <Button variant="ghost"  size="sm" onClick={() => openAction(a.id,'rescheduled')}><FiClock />{!isMobile && ' Reschedule'}</Button>
                   </div>
                 )}
                 {a.status === 'accepted' && (
-                  <div onClick={e => e.stopPropagation()}>
+                  <div className={styles.actionButtons} onClick={e => e.stopPropagation()}>
                     <Button variant="primary" size="sm" onClick={() => openAction(a.id,'completed')}>
                       <FiCheck />{!isMobile && ' Complete'}
                     </Button>
