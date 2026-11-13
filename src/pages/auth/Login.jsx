@@ -76,18 +76,19 @@ const Login = () => {
       {/* Left panel */}
       <div className={styles.left}>
         <div className={styles.leftContent}>
-          <div className={styles.logo}>
+          <Link to="/" className={styles.logo}>
             <div className={styles.logoBox}><GiMedicalPack color="#fff" size={24} /></div>
-            <span className={styles.logoName}>MediCare HMS</span>
-          </div>
-          <h2 className={styles.tagline}>Healthcare Management, Reimagined.</h2>
-          <p className={styles.sub}>A unified platform for doctors, patients, and administrators.</p>
+            <span className={styles.logoName}>Canon Care</span>
+          </Link>
+          <span className={styles.panelEyebrow}>YOUR HEALTH, OUR PRIORITY</span>
+          <h2 className={styles.tagline}>Care that stays connected to you.</h2>
+          <p className={styles.sub}>A simpler way to stay close to your care team and the details that matter to your health.</p>
           <div className={styles.features}>
             {[
-              { icon:<FiCalendar size={16} color="#0d9488" />,     text:'Smart appointment scheduling with real-time availability' },
-              { icon:<FiMessageSquare size={16} color="#0d9488" />, text:'Encrypted real-time doctor-patient messaging' },
-              { icon:<FiVideo size={16} color="#0d9488" />,         text:'Secure WebRTC video consultations' },
-              { icon:<FiShield size={16} color="#0d9488" />,        text:'CSRF protection + HttpOnly cookie auth' },
+              { icon:<FiCalendar size={16} />,     text:'Manage your appointments in one place' },
+              { icon:<FiMessageSquare size={16} />, text:'Stay in touch with your care team' },
+              { icon:<FiVideo size={16} />,         text:'Connect through virtual consultations' },
+              { icon:<FiShield size={16} />,        text:'Your health information stays protected' },
             ].map((f, i) => (
               <div className={styles.feature} key={i}>
                 <div className={styles.featureIcon}>{f.icon}</div>
@@ -107,8 +108,9 @@ const Login = () => {
             <motion.div key="credentials" className={styles.formWrap}
               initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-16 }}
               transition={{ duration:0.35 }}>
+              <span className={styles.formEyebrow}>PATIENT &amp; CARE TEAM PORTAL</span>
               <h1 className={styles.welcome}>Welcome back</h1>
-              <p className={styles.welcomeSub}>Sign in to your HMS account</p>
+              <p className={styles.welcomeSub}>Sign in to continue to your Canon Care account.</p>
               {error && <div className={styles.error}>{error}</div>}
               <form className={styles.form} onSubmit={handleCredentials}>
                 <Input label="Email address" name="email" type="email" value={form.email}
@@ -146,7 +148,8 @@ const Login = () => {
               <div style={{ width:56, height:56, borderRadius:14, background:'var(--color-teal-light)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'1.25rem' }}>
                 <FiKey size={26} color="var(--color-teal)" />
               </div>
-              <h1 className={styles.welcome}>Two-Factor Authentication</h1>
+              <span className={styles.formEyebrow}>ACCOUNT SECURITY</span>
+              <h1 className={styles.welcome}>Verify it’s you</h1>
               <p className={styles.welcomeSub}>
                 Open your authenticator app and enter the 6-digit code.
               </p>
