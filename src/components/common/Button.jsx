@@ -15,8 +15,8 @@ const Button = ({
   ].filter(Boolean).join(' ');
 
   return (
-    <button type={type} className={cls} disabled={disabled || loading} onClick={onClick} {...props}>
-      {loading && <span className={styles.spinner} />}
+    <button type={type} className={cls} disabled={disabled || loading} onClick={onClick} aria-busy={loading || undefined} {...props}>
+      {loading && <span className={styles.loadingMark} aria-hidden="true"><i /><i /><i /></span>}
       {children}
     </button>
   );

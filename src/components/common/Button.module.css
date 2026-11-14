@@ -62,11 +62,9 @@
 .fullWidth { width: 100%; }
 .rounded   { border-radius: var(--border-radius-full); }
 
-.spinner {
-  width: 1em; height: 1em;
-  border: 2px solid rgba(255,255,255,0.4);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+.loadingMark { display: inline-flex; align-items: center; gap: 2px; height: 1em; }
+.loadingMark i { width: 3px; height: 0.45em; border-radius: 2px; background: currentColor; opacity: .45; animation: loadingPulse .8s ease-in-out infinite alternate; }
+.loadingMark i:nth-child(2) { animation-delay: .15s; }
+.loadingMark i:nth-child(3) { animation-delay: .3s; }
+@keyframes loadingPulse { to { height: .95em; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .loadingMark i { animation: none; opacity: .75; } }
