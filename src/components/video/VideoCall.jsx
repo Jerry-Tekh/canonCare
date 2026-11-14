@@ -406,7 +406,7 @@ const VideoCall = ({ peerId, peerName, peerAvatar, appointmentId, initiator = tr
           <div>
             <div style={{ color:'#fff', fontWeight:700 }}>{peerName}</div>
             <div style={{ color:'rgba(255,255,255,.6)', fontSize:'var(--text-xs)', display:'flex', alignItems:'center', gap:'0.375rem' }}>
-              {callState === S.RECONNECTING && <FiRotateCcw size={10} style={{ animation:'spin 1s linear infinite' }} />}
+              {callState === S.RECONNECTING && <span aria-hidden="true" style={{ width:12, height:10, display:'inline-flex', alignItems:'center', gap:2 }}><i style={{ width:3, height:5, borderRadius:2, background:'currentColor' }} /><i style={{ width:3, height:9, borderRadius:2, background:'currentColor' }} /><i style={{ width:3, height:6, borderRadius:2, background:'currentColor' }} /></span>}
               {statusLabel}
             </div>
           </div>
@@ -448,7 +448,7 @@ const VideoCall = ({ peerId, peerName, peerAvatar, appointmentId, initiator = tr
             )}
             <div style={{ color:'#fff', fontWeight:700, fontSize:'var(--text-xl)' }}>{peerName}</div>
             {!isTerminal && (
-              <div style={{ width:36, height:36, borderRadius:'50%', border:'3px solid rgba(255,255,255,.15)', borderTopColor:'var(--color-teal)', animation:'spin .9s linear infinite' }} />
+              <div role="status" aria-label="Connecting" style={{ width:56, height:8, overflow:'hidden', borderRadius:99, background:'rgba(255,255,255,.16)' }}><div style={{ width:'42%', height:'100%', borderRadius:99, background:'var(--color-teal)', animation:'connectionProgress 1.2s ease-in-out infinite alternate' }} /></div>
             )}
             <div style={{ color:'rgba(255,255,255,.65)', fontSize:'var(--text-sm)' }}>
               {errorMsg || STATE_LABEL[callState]}
@@ -510,7 +510,7 @@ const VideoCall = ({ peerId, peerName, peerAvatar, appointmentId, initiator = tr
         </div>
       )}
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`@keyframes connectionProgress { from { transform: translateX(-10%); } to { transform: translateX(150%); } }`}</style>
     </motion.div>
   )
 }

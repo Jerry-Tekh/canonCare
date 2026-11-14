@@ -1,0 +1,50 @@
+.skeleton {
+  --skeleton-base: #e8efee;
+  --skeleton-highlight: #f7faf9;
+  width: min(100%, 980px);
+  display: grid;
+  gap: 1rem;
+  color: transparent;
+}
+
+.skeleton i {
+  display: block;
+  background: linear-gradient(100deg, var(--skeleton-base) 25%, var(--skeleton-highlight) 42%, var(--skeleton-base) 62%);
+  background-size: 220% 100%;
+  border-radius: 8px;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.heading { display: grid; justify-items: start; gap: .65rem; padding: .2rem 0 .25rem; }
+.eyebrow { width: 112px; height: 9px; border-radius: 99px !important; }
+.title { width: min(320px, 72%); height: 29px; }
+.subtitle { width: min(460px, 90%); height: 13px; }
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .85rem; }
+.metric { min-width: 0; min-height: 82px; display: flex; align-items: center; gap: .75rem; padding: .9rem; border: 1px solid #e5eceb; border-radius: 14px; background: #fff; }
+.icon { width: 40px; height: 40px; flex: 0 0 40px; border-radius: 12px !important; }
+.metric span { flex: 1; display: grid; gap: .5rem; }
+.value { width: 42px; height: 17px; }
+.label { width: min(110px, 100%); height: 10px; }
+.panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; }
+.panel { min-width: 0; min-height: 205px; display: grid; align-content: start; gap: .75rem; padding: 1rem; border: 1px solid #e5eceb; border-radius: 14px; background: #fff; }
+.panelTitle { width: 48%; height: 15px; }
+.panelLine { width: 68%; height: 10px; }
+.chart { width: 100%; height: 120px; margin-top: .25rem; border-radius: 10px !important; }
+.fullScreen { position: fixed; inset: 0; z-index: 9999; display: grid; align-content: center; justify-items: center; padding: clamp(1rem, 4vw, 3rem); background: rgba(247, 250, 249, .96); }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+@keyframes shimmer { to { background-position-x: -220%; } }
+
+@media (max-width: 700px) {
+  .skeleton { gap: .75rem; }
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+  .metric { min-height: 72px; padding: .7rem; gap: .55rem; }
+  .icon { width: 34px; height: 34px; flex-basis: 34px; }
+  .panels { grid-template-columns: 1fr; gap: .6rem; }
+  .panel { min-height: 155px; padding: .85rem; }
+  .chart { height: 78px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton i { animation: none; }
+}
