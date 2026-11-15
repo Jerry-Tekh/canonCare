@@ -26,8 +26,10 @@
 .heroActions{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap}
 .textButton{display:inline-flex;align-items:center;gap:.3rem;min-height:44px;padding:.55rem .2rem;color:#28414c;text-decoration:none;font-size:.9rem;font-weight:650}
 .textButton:hover,.inlineLink:hover{color:#007360}
-.visitTypes{display:flex;align-items:center;gap:.55rem;margin-top:1.6rem;color:#536770;font-size:.81rem}
-.visitTypes span+span:before{content:'·';margin-right:.55rem;color:#00977e}
+.visitTypes{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-top:1.6rem;color:#536770;font-size:.81rem}
+.visitTypes span{display:inline-flex;align-items:center;gap:.45rem;min-height:34px;padding:.38rem .7rem;border:1px solid #d8e5e1;border-radius:999px;background:rgba(255,255,255,.9);color:#304a55;font-size:.81rem;font-weight:600;box-shadow:0 2px 6px rgba(28,48,61,.05)}
+.visitTypes span::before{content:'';width:6px;height:6px;flex:0 0 6px;border-radius:50%;background:#00a98d;animation:visitDotBlink 1.15s ease-in-out infinite}
+.visitTypes span:nth-child(2)::before{animation-delay:.18s}.visitTypes span:nth-child(3)::before{animation-delay:.36s}
 
 .appointmentSection{max-width:1080px;margin:auto;padding:88px 24px 90px;display:grid;grid-template-columns:minmax(240px,.75fr) minmax(0,1.25fr);column-gap:5rem;align-items:start}
 .sectionIntro{max-width:650px}.sectionIntro h2{max-width:600px;margin:.8rem 0 .7rem;color:var(--ink);font:650 clamp(2rem,3.4vw,2.8rem)/1.15 'Manrope',sans-serif;letter-spacing:-.04em}.sectionIntro>p{max-width:610px;margin:0;color:var(--muted);font-size:.98rem;line-height:1.7}
