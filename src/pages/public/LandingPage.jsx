@@ -17,7 +17,7 @@ const LandingPage = () => {
   const closeMobileNav = () => setMobileNavOpen(false);
   const mobileNavPanelStyle = mobileNavOpen ? {
     position: 'absolute', top: 'calc(100% + 8px)', left: 12, right: 12, zIndex: 25,
-    display: 'grid', justifyItems: 'stretch', alignItems: 'stretch', gap: 2,
+    display: 'grid', justifyContent: 'stretch', justifyItems: 'stretch', alignItems: 'stretch', gap: 2,
     width: 'auto', margin: 0, padding: 8, boxSizing: 'border-box',
   } : undefined;
   const mobileNavLinkStyle = mobileNavOpen ? {
