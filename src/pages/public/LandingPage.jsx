@@ -15,6 +15,15 @@ const CONTACT_EMAIL = 'contact@canoncare.com';
 const LandingPage = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const closeMobileNav = () => setMobileNavOpen(false);
+  const mobileNavPanelStyle = mobileNavOpen ? {
+    position: 'absolute', top: 'calc(100% + 8px)', left: 12, right: 12, zIndex: 25,
+    display: 'grid', justifyItems: 'stretch', alignItems: 'stretch', gap: 2,
+    width: 'auto', margin: 0, padding: 8, boxSizing: 'border-box',
+  } : undefined;
+  const mobileNavLinkStyle = mobileNavOpen ? {
+    display: 'flex', justifySelf: 'stretch', alignItems: 'center', justifyContent: 'flex-start',
+    width: '100%', minHeight: 48, padding: '0 14px', boxSizing: 'border-box', textAlign: 'left',
+  } : undefined;
 
   const handleContactSubmit = (event) => {
     event.preventDefault();
@@ -40,12 +49,12 @@ const LandingPage = () => {
         <span className={styles.logoMark}><GiMedicalPack /></span>
         <span><strong>Canon Care</strong><small>HEALTH &amp; WELLNESS</small></span>
       </Link>
-      <nav id="primary-navigation" className={`${styles.navLinks} ${mobileNavOpen ? styles.navLinksOpen : ''}`} aria-label="Main navigation">
-        <a href="#home" onClick={closeMobileNav}>Home</a>
-        <a href="#appointments" onClick={closeMobileNav}>Appointments</a>
-        <a href="#portal" onClick={closeMobileNav}>Patient portal</a>
-        <a href="#contact" onClick={closeMobileNav}>Contact</a>
-        <a href="#faq" onClick={closeMobileNav}>FAQ</a>
+      <nav id="primary-navigation" className={`${styles.navLinks} ${mobileNavOpen ? styles.navLinksOpen : ''}`} style={mobileNavPanelStyle} aria-label="Main navigation">
+        <a href="#home" onClick={closeMobileNav} style={mobileNavLinkStyle}>Home</a>
+        <a href="#appointments" onClick={closeMobileNav} style={mobileNavLinkStyle}>Appointments</a>
+        <a href="#portal" onClick={closeMobileNav} style={mobileNavLinkStyle}>Patient portal</a>
+        <a href="#contact" onClick={closeMobileNav} style={mobileNavLinkStyle}>Contact</a>
+        <a href="#faq" onClick={closeMobileNav} style={mobileNavLinkStyle}>FAQ</a>
       </nav>
       <div className={styles.navActions}>
         <Link to="/login" className={styles.signIn}>Sign in</Link>
